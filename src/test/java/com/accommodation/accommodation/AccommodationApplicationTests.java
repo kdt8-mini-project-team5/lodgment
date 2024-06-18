@@ -1,10 +1,10 @@
-package com.lodgment.lodgment;
+package com.accommodation.accommodation;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class LodgmentApplicationTests {
+class AccommodationApplicationTests {
 
 	@Test
 	void contextLoads() {
