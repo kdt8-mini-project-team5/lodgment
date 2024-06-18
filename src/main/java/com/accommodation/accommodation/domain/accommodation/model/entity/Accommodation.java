@@ -1,5 +1,6 @@
 package com.accommodation.accommodation.domain.accommodation.model.entity;
 
+import com.accommodation.accommodation.domain.accommodation.model.type.Category;
 import com.accommodation.accommodation.domain.booking.model.entity.Booking;
 import com.accommodation.accommodation.domain.interest.model.entity.Interest;
 import com.accommodation.accommodation.domain.room.model.entity.Room;
@@ -40,8 +41,8 @@ public class Accommodation extends BaseTimeStamp {
     @Column
     private String tel;
 
-    @Column
-    private String category; // TODO : enum으로
+    @Enumerated(EnumType.STRING)
+    private Category category; // TODO : enum으로
 
     @Column
     private LocalTime check_in;
