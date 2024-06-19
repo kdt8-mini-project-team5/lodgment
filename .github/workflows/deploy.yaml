@@ -32,11 +32,10 @@ jobs:
       - name: Build Docker image
         run: docker build -t ghcr.io/mine-project:latest .
 
-      - name: Log in to GitHub Container Registry
-        run: echo "${{ secrets.WONJUN_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-      - name: Push Docker image
-        run: docker push ghcr.io/mine-project:latest
+      - name: Login And Push Docker image
+        run: |
+          echo "${{ secrets.WONJUN_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker push ghcr.io/mine-project:latest
 
       - name: Execute Server Init Script
         uses: appleboy/ssh-action@master
