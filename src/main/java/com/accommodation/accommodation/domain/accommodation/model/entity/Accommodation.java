@@ -32,6 +32,9 @@ public class Accommodation extends BaseTimeStamp {
     private String address;
 
     @Column
+    private String region;
+
+    @Column
     private String longitude;
 
     @Column
@@ -65,6 +68,12 @@ public class Accommodation extends BaseTimeStamp {
     private boolean refrigerator;
 
     @Column
+    private boolean shower;
+
+    @Column
+    private boolean aircone;
+
+    @Column
     private boolean chkcooking;
 
     @Column
@@ -82,7 +91,7 @@ public class Accommodation extends BaseTimeStamp {
     @ElementCollection(fetch = FetchType.LAZY)
     private List<String> accommodationImages;
 
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "accommodation")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "accommodation")
     private List<Room> roomList;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "accommodation")
