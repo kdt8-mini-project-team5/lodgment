@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor
+//@NoArgsConstructor
 public class User extends BaseTimeStamp {
 
     @Id

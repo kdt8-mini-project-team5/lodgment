@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor
+//@NoArgsConstructor
 public class Booking extends BaseTimeStamp {
 
     @Id

@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor
+//@NoArgsConstructor
 public class Room extends BaseTimeStamp {
 
     @Id
@@ -34,6 +34,8 @@ public class Room extends BaseTimeStamp {
     private String maxPeople;
 
     @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "room_images", joinColumns = @JoinColumn(name = "room_id"))
+    @Column(name = "image_url")
     private List<String> roomImages;
 
     @ManyToOne(fetch = FetchType.LAZY)

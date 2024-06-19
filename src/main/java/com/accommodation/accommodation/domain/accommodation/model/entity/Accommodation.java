@@ -1,7 +1,6 @@
 package com.accommodation.accommodation.domain.accommodation.model.entity;
 
 import com.accommodation.accommodation.domain.accommodation.model.type.Category;
-import com.accommodation.accommodation.domain.booking.model.entity.Booking;
 import com.accommodation.accommodation.domain.interest.model.entity.Interest;
 import com.accommodation.accommodation.domain.room.model.entity.Room;
 import com.accommodation.accommodation.global.model.entity.BaseTimeStamp;
@@ -16,7 +15,7 @@ import java.util.List;
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor
+//@NoArgsConstructor
 public class Accommodation extends BaseTimeStamp {
 
     @Id
@@ -42,7 +41,7 @@ public class Accommodation extends BaseTimeStamp {
     private String tel;
 
     @Enumerated(EnumType.STRING)
-    private Category category; // TODO : enum으로
+    private Category category;
 
     @Column
     private LocalTime check_in;
@@ -51,7 +50,13 @@ public class Accommodation extends BaseTimeStamp {
     private LocalTime check_out;
 
     @Column
-    private boolean parkingLodging; // parking 이 어떨지..
+    private boolean parkingLodging;
+
+    @Column
+    private boolean shower;
+
+    @Column
+    private boolean aircone;
 
     @Column
     private boolean tv;
@@ -81,13 +86,13 @@ public class Accommodation extends BaseTimeStamp {
     private Long minPrice;
 
     @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "accommodation_images", joinColumns = @JoinColumn(name = "accommodation_id"))
+    @Column(name = "image_url")
     private List<String> accommodationImages;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "accommodation")
     private List<Room> roomList;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "accommodation")
     private List<Interest> interestList;
-
-
 }
