@@ -14,7 +14,6 @@ import java.util.List;
 @Entity
 @Getter
 @Builder
-@RequiredArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
 public class Accommodation extends BaseTimeStamp {
@@ -83,10 +82,10 @@ public class Accommodation extends BaseTimeStamp {
     @ElementCollection(fetch = FetchType.LAZY)
     private List<String> accommodationImages;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "accommodation")
     private List<Room> roomList;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "accommodation")
     private List<Interest> interestList;
 
 

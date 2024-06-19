@@ -12,7 +12,6 @@ import java.util.List;
 @Entity
 @Getter
 @Builder
-@RequiredArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
 public class Room extends BaseTimeStamp {
@@ -39,6 +38,6 @@ public class Room extends BaseTimeStamp {
     @ManyToOne(fetch = FetchType.LAZY)
     private Accommodation accommodation;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "room")
     private List<Booking> bookingList;
 }

@@ -9,7 +9,6 @@ import lombok.*;
 @Entity
 @Getter
 @Builder
-@RequiredArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
 public class Interest extends BaseTimeStamp {
