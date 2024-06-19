@@ -23,7 +23,7 @@ public class EmailUtil {
     public void sendSingUpRandomNumberEmail(String email, String message) {
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
         javaMailSender.setHost("smtp.naver.com");
-        javaMailSender.setUsername(email);
+        javaMailSender.setUsername(this.email);
         javaMailSender.setPassword(pw);
 
         javaMailSender.setPort(465);
@@ -34,7 +34,7 @@ public class EmailUtil {
         MimeMessageHelper h = new MimeMessageHelper(m, "UTF-8");
 
         try {
-            h.setFrom(email+"@naver.com");
+            h.setFrom(this.email+"@naver.com");
             h.setTo(email);
             h.setSubject("[패스트캠퍼스] 미니 프로젝트");
             h.setText(message);
