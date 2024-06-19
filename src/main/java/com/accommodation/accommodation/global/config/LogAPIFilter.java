@@ -3,6 +3,7 @@ package com.accommodation.accommodation.global.config;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -10,9 +11,9 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Component
+@Slf4j(topic = "API_LOGGER")
 public class LogAPIFilter implements Filter {
 
-    private static final Logger apiLogger = LoggerFactory.getLogger("API_LOGGER");
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -32,10 +33,11 @@ public class LogAPIFilter implements Filter {
 
         long duration = System.currentTimeMillis() - startTime;
 
-        apiLogger.info("Method: {}, URI: {}, Status: {}, Duration: {} ms",
-                httpRequest.getMethod(), httpRequest.getRequestURI(),
-                httpResponse.getStatus(), duration);
-
+        if (!httpRequest.getRequestURI().equals("/actuator/prometheus")) {
+            log.info("Method: {}, URI: {}, Status: {}, Duration: {} ms",
+                    httpRequest.getMethod(), httpRequest.getRequestURI(),
+                    httpResponse.getStatus(), duration);
+        }
 
     }
 
