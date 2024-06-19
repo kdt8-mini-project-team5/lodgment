@@ -20,7 +20,7 @@ public class EmailUtil {
     @Value("${email.pw}")
     private String pw;
 
-    public void sendSingUpRandomNumberEmail(EmailSendRequest request, String successKey) {
+    public void sendSingUpRandomNumberEmail(String email, String message) {
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
         javaMailSender.setHost("smtp.naver.com");
         javaMailSender.setUsername(email);
@@ -35,9 +35,9 @@ public class EmailUtil {
 
         try {
             h.setFrom(email+"@naver.com");
-            h.setTo(request.email());
-            h.setSubject("인증번호 발송");
-            h.setText("인증번호 : " + successKey);
+            h.setTo(email);
+            h.setSubject("[패스트캠퍼스] 미니 프로젝트");
+            h.setText(message);
         } catch (Exception e) {
             throw new AuthException(AuthErrorCode.ERROR_SEND_EMAIL);
         }

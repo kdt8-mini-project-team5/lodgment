@@ -47,7 +47,7 @@ public class RegisterService {
 
         String successKey = getSuccessKey();
 
-        emailUtil.sendSingUpRandomNumberEmail(request, successKey);
+        emailUtil.sendSingUpRandomNumberEmail(request.email(), "인증번호 : " + successKey);
 
         redisUtil.setValue("auth:" + request.email(), successKey, 30L, TimeUnit.MINUTES);
 
