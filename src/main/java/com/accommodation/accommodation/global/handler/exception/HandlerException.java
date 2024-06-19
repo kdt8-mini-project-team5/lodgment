@@ -1,6 +1,6 @@
 package com.accommodation.accommodation.global.handler.exception;
 
-import com.accommodation.accommodation.domain.auth.exception.AuthException;
+import com.accommodation.accommodation.domain.accommodation.exception.AccommodationException;
 import com.accommodation.accommodation.global.model.response.ErrorResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +16,15 @@ public class HandlerException {
 
     @ExceptionHandler(HttpStatusCodeException.class)
     public ResponseEntity authException(HttpStatusCodeException e) {
+
+        log.error(e.getStatusText());
+
+        return ResponseEntity.status(e.getStatusCode())
+                .body(new ErrorResponse(e.getStatusCode().value(), e.getStatusText()));
+    }
+
+    @ExceptionHandler(AccommodationException.class)
+    public ResponseEntity<ErrorResponse> accommodationException(AccommodationException e) {
 
         log.error(e.getStatusText());
 
