@@ -29,11 +29,11 @@ jobs:
         run: ./gradlew build
         shell: bash
 
+      - name: Build Docker image
+        run: docker build -t ghcr.io/mine-project:latest .
+
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.WONJUN_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-      - name: Build Docker image
-        run: docker build . -t ghcr.io/mine-project:latest
 
       - name: Push Docker image
         run: docker push ghcr.io/mine-project:latest
