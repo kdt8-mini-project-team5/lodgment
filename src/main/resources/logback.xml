@@ -1,0 +1,16 @@
+<configuration>
+
+    <appender name="logstashApiLogs" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>58.239.220.38:9604</destination>
+        <encoder charset="UTF-8" class="net.logstash.logback.encoder.LogstashEncoder"/>
+    </appender>
+
+    <appender name="asyncLogstashApiLogs" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="logstashApiLogs"/>
+    </appender>
+
+    <logger name="API_LOGGER" level="INFO" additivity="false">
+        <appender-ref ref="asyncLogstashApiLogs"/>
+    </logger>
+
+</configuration>

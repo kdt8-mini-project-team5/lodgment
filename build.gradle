@@ -35,6 +35,7 @@ dependencies {
 	//ELK에 필요한 라이브러리
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'io.micrometer:micrometer-registry-prometheus'
+	implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.2'
 }
 
 tasks.named('test') {
