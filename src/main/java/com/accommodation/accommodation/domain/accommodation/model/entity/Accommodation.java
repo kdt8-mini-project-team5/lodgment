@@ -89,7 +89,7 @@ public class Accommodation extends BaseTimeStamp {
     private Long minPrice;
 
     @ElementCollection(fetch = FetchType.LAZY)
-    private List<String> accommodationImages;
+    private List<String> images;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "accommodation")
     private List<Room> roomList;

@@ -33,7 +33,7 @@ public class Room extends BaseTimeStamp {
     private String maxPeople;
 
     @ElementCollection(fetch = FetchType.LAZY)
-    private List<String> roomImages;
+    private List<String> images;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Accommodation accommodation;
