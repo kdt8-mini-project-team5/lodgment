@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum AccommodationErrorCode implements ErrorCode {
 
-    BAD_REQUEST_CATEGORY("BAD_REQUEST_CATEGORY", HttpStatus.BAD_REQUEST),
     ;
 
     private final String statusText;

@@ -31,15 +31,6 @@ public enum Category {
         return BY_TYPE.get(type);
     }
 
-/*    public static Category valueOfTypeThrow(String type) {
-        Category category = BY_TYPE.get(type);
-        if (category == null) {
-            System.out.println("test");
-            throw new AccommodationException(AccommodationErrorCode.BAD_REQUEST_CATEGORY);
-        }
-        return category;
-    }*/
-
     public static boolean checkValidCategory(String type) {
         Category category = BY_TYPE.get(type);
         if (category == null){
