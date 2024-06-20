@@ -12,9 +12,8 @@ import java.util.List;
 @Entity
 @Getter
 @Builder
-@RequiredArgsConstructor
 @AllArgsConstructor
-//@NoArgsConstructor
+@NoArgsConstructor
 public class Room extends BaseTimeStamp {
 
     @Id
@@ -34,13 +33,11 @@ public class Room extends BaseTimeStamp {
     private String maxPeople;
 
     @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "room_images", joinColumns = @JoinColumn(name = "room_id"))
-    @Column(name = "image_url")
-    private List<String> roomImages;
+    private List<String> images;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Accommodation accommodation;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "room")
     private List<Booking> bookingList;
 }

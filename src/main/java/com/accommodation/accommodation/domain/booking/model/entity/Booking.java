@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Builder
-@RequiredArgsConstructor
 @AllArgsConstructor
 //@NoArgsConstructor
 public class Booking extends BaseTimeStamp {

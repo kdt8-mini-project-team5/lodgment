@@ -11,7 +11,6 @@ import java.util.List;
 @Entity
 @Getter
 @Builder
-@RequiredArgsConstructor
 @AllArgsConstructor
 //@NoArgsConstructor
 public class User extends BaseTimeStamp {
