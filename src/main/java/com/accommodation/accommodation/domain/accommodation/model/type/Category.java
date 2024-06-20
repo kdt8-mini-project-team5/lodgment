@@ -1,7 +1,5 @@
 package com.accommodation.accommodation.domain.accommodation.model.type;
 
-import com.accommodation.accommodation.domain.accommodation.exception.AccommodationException;
-import com.accommodation.accommodation.domain.accommodation.exception.errorcode.AccommodationErrorCode;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -29,11 +27,25 @@ public enum Category {
     private static final Map<String, Category> BY_TYPE =
         Stream.of(values()).collect(Collectors.toMap(Category::getType, Function.identity()));
 
-    public static Category valueOfTypeWithThrow(String type) {
+    public static Category valueOfType(String type) {
+        return BY_TYPE.get(type);
+    }
+
+/*    public static Category valueOfTypeThrow(String type) {
         Category category = BY_TYPE.get(type);
-        if (category == null){
+        if (category == null) {
+            System.out.println("test");
             throw new AccommodationException(AccommodationErrorCode.BAD_REQUEST_CATEGORY);
         }
         return category;
+    }*/
+
+    public static boolean checkValidCategory(String type) {
+        Category category = BY_TYPE.get(type);
+        if (category == null){
+            return false;
+        }
+        return true;
     }
+
 }
