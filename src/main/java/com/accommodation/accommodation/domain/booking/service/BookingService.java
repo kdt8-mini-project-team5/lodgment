@@ -99,7 +99,7 @@ public class BookingService {
                     .orderId(booking.getOrderId())
                     .accommodationTitle(booking.getRoom().getAccommodation().getTitle())
                     .roomTitle(booking.getRoom().getTitle())
-                    .roomImg("")
+                    .roomImg("") // TODO : 확인 필요
                     .minPeople(Integer.parseInt(booking.getRoom().getMinPeople()))
                     .maxPeople(Integer.parseInt(booking.getRoom().getMaxPeople()))
                     .checkInDatetime(booking.getCheckInDatetime())
