@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Builder
 @AllArgsConstructor
-//@NoArgsConstructor
+@NoArgsConstructor
 public class User extends BaseTimeStamp {
 
     @Id
