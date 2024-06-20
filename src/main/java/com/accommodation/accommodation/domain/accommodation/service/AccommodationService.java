@@ -3,8 +3,8 @@ package com.accommodation.accommodation.domain.accommodation.service;
 import com.accommodation.accommodation.domain.accommodation.exception.AccommodationException;
 import com.accommodation.accommodation.domain.accommodation.exception.errorcode.AccommodationErrorCode;
 import com.accommodation.accommodation.domain.accommodation.model.entity.Accommodation;
-import com.accommodation.accommodation.domain.accommodation.model.response.AccommodationResponse;
-import com.accommodation.accommodation.domain.accommodation.model.response.AccommodationResponse.RoomResponse;
+import com.accommodation.accommodation.domain.accommodation.model.response.AccommodationDetailResponse;
+import com.accommodation.accommodation.domain.accommodation.model.response.AccommodationDetailResponse.RoomResponse;
 import com.accommodation.accommodation.domain.accommodation.repository.AccommodationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ public class AccommodationService {
     private final AccommodationRepository accommodationRepository;
 
     @Transactional(readOnly = true)
-    public AccommodationResponse getAccommodationById(Long id, LocalDate checkInDate, LocalDate checkOutDate) {
+    public AccommodationDetailResponse getAccommodationById(Long id, LocalDate checkInDate, LocalDate checkOutDate) {
         Accommodation accommodation = accommodationRepository.findById(id)
                 .orElseThrow(() -> new AccommodationException(AccommodationErrorCode.NOT_FOUND));
 
@@ -28,7 +28,7 @@ public class AccommodationService {
             throw new AccommodationException(AccommodationErrorCode.INVALID_DATE);
         }
 
-        return AccommodationResponse.builder()
+        return AccommodationDetailResponse.builder()
                 .longitude(accommodation.getLongitude())
                 .latitude(accommodation.getLatitude())
                 .title(accommodation.getTitle())

@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class AccommodationResponse {
+public class AccommodationDetailResponse {
     private String longitude;
     private String latitude;
     private String title;
