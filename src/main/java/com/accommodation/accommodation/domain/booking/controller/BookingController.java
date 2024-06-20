@@ -2,6 +2,7 @@ package com.accommodation.accommodation.domain.booking.controller;
 
 import com.accommodation.accommodation.domain.booking.model.request.CreateBookingRequest;
 import com.accommodation.accommodation.domain.booking.service.BookingService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +21,7 @@ public class BookingController {
 
     @PostMapping
     public ResponseEntity createBooking(
-        @RequestBody CreateBookingRequest createBookingRequest
+        @Valid @RequestBody CreateBookingRequest createBookingRequest
     ) {
         return bookingService.createBooking(createBookingRequest);
     }
