@@ -3,19 +3,18 @@ package com.accommodation.accommodation.domain.accommodation.model.response;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalTime;
 import java.util.List;
 
 @Data
 @Builder
 public class AccommodationDetailResponse {
-    private String longitude;
-    private String latitude;
+    private double longitude;
+    private double latitude;
     private String title;
     private String info;
-    private Long price;
-    private LocalTime checkIn;
-    private LocalTime checkOut;
+    private long price;
+    private String checkIn;
+    private String checkOut;
     private boolean shower;
     private boolean aircone;
     private boolean tv;
@@ -36,7 +35,7 @@ public class AccommodationDetailResponse {
     @Builder
     public static class RoomResponse {
         private String title;
-        private Long price;
+        private long price;
         private int minPeople;
         private int maxPeople;
         private List<String> img;

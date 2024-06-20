@@ -37,13 +37,13 @@ public class AccommodationService {
         accommodation.getRoomList().forEach(room -> room.getImages().size());
 
         return AccommodationDetailResponse.builder()
-                .longitude(accommodation.getLongitude())
-                .latitude(accommodation.getLatitude())
+                .longitude(Double.parseDouble(accommodation.getLongitude()))
+                .latitude(Double.parseDouble(accommodation.getLatitude()))
                 .title(accommodation.getTitle())
                 .info(accommodation.getInfo())
                 .price(accommodation.getMinPrice())
-                .checkIn(accommodation.getCheck_in())
-                .checkOut(accommodation.getCheck_out())
+                .checkIn(accommodation.getCheck_in().toString())
+                .checkOut(accommodation.getCheck_out().toString())
                 .shower(accommodation.isShower())
                 .aircone(accommodation.isAircone())
                 .tv(accommodation.isTv())
