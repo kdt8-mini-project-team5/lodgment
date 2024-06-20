@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.util.stream.Collectors;
 
@@ -19,6 +21,9 @@ public class AccommodationService {
 
     private final AccommodationRepository accommodationRepository;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @Transactional(readOnly = true)
     public AccommodationDetailResponse getAccommodationById(Long id, LocalDate checkInDate, LocalDate checkOutDate) {
         Accommodation accommodation = accommodationRepository.findById(id)
@@ -27,6 +32,9 @@ public class AccommodationService {
         if (checkInDate != null && checkOutDate != null && checkInDate.isAfter(checkOutDate)) {
             throw new AccommodationException(AccommodationErrorCode.INVALID_DATE);
         }
+
+        accommodation.getImages().size();
+        accommodation.getRoomList().forEach(room -> room.getImages().size());
 
         return AccommodationDetailResponse.builder()
                 .longitude(accommodation.getLongitude())
