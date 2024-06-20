@@ -1,7 +1,6 @@
 package com.accommodation.accommodation.domain.accommodation.model.entity;
 
 import com.accommodation.accommodation.domain.accommodation.model.type.Category;
-import com.accommodation.accommodation.domain.booking.model.entity.Booking;
 import com.accommodation.accommodation.domain.interest.model.entity.Interest;
 import com.accommodation.accommodation.domain.room.model.entity.Room;
 import com.accommodation.accommodation.global.model.entity.BaseTimeStamp;
@@ -47,10 +46,10 @@ public class Accommodation extends BaseTimeStamp {
     private Category category; // TODO : enum으로
 
     @Column
-    private LocalTime check_in;
+    private LocalTime checkIn;
 
     @Column
-    private LocalTime check_out;
+    private LocalTime checkOut;
 
     @Column
     private boolean parkingLodging; // parking 이 어떨지..
