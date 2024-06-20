@@ -11,10 +11,11 @@ import com.accommodation.accommodation.domain.booking.model.response.CreateBooki
 import com.accommodation.accommodation.domain.booking.repository.BookingRepository;
 import com.accommodation.accommodation.domain.room.repository.RoomRepository;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,13 +86,16 @@ public class BookingService {
         return ResponseEntity.ok().body(response);
     }
 
+
     @Transactional(readOnly = true)
     public ResponseEntity confirmBooking(int page, int size) {
 
         // temporary for test
-        var testUser = userRepository.findById(1L).get().getId();
+        var userId = userRepository.findById(1L).get().getId();
 
-        var bookingList = bookingRepository.findAllByUserId(testUser);
+
+        Pageable pageable = PageRequest.of(page, size);
+        var bookingList = bookingRepository.findAllByUserId(userId, pageable);
 
         var bookingResponse = ConfirmBookingResponse.builder()
             .bookingList(bookingList.stream()
@@ -99,7 +103,7 @@ public class BookingService {
                     .orderId(booking.getOrderId())
                     .accommodationTitle(booking.getRoom().getAccommodation().getTitle())
                     .roomTitle(booking.getRoom().getTitle())
-                    .roomImg("") // TODO : 확인 필요
+                    .roomImg("") // TODO : 확인 필요 (이미지 1개만 전달해 주는 지?)
                     .minPeople(Integer.parseInt(booking.getRoom().getMinPeople()))
                     .maxPeople(Integer.parseInt(booking.getRoom().getMaxPeople()))
                     .checkInDatetime(booking.getCheckInDatetime())
@@ -108,8 +112,6 @@ public class BookingService {
                 .collect(Collectors.toList())
             )
             .build();
-
-        // TODO : pagination
 
         return ResponseEntity.ok().body(bookingResponse);
     }
