@@ -38,8 +38,9 @@ public class BookingService {
             .orElseThrow(() -> new BookingException(BookingErrorCode.WRONG_ROOM_ID));
 
         int roomMaxPeople = roomEntity.getMaxPeople();
-        int roomMinPeople = roomEntity.getMaxPeople();
+        int roomMinPeople = roomEntity.getMinPeople();
         if(roomMinPeople > request.numPeople() || roomMaxPeople < request.numPeople()) {
+            System.out.println("room : " + request.numPeople() + " min : " + roomMinPeople + " max : " + roomMaxPeople);
             throw new BookingException(BookingErrorCode.WRONG_OPTIONS);
         }
 
@@ -68,6 +69,7 @@ public class BookingService {
             .room(roomEntity)
             .checkInDatetime(checkInDatetime)
             .checkOutDatetime(checkOutDatetime)
+            .people(request.numPeople())
             .totalPrice(totalPrice)
             .build();
 
