@@ -56,10 +56,7 @@ public class BookingService {
             throw new BookingException(BookingErrorCode.CONFLICT_BOOKING);
         }
 
-        // calculate totalPrice
-        long totalPrice2 = checkInDatetime.until(checkOutDatetime, ChronoUnit.DAYS) * roomEntity.getPrice();
-        long totalPrice = ChronoUnit.DAYS.between(checkInDatetime.toLocalDate(), checkOutDatetime.toLocalDate()) * roomEntity.getPrice();;
-
+        long totalPrice = ChronoUnit.DAYS.between(checkInDatetime.toLocalDate(), checkOutDatetime.toLocalDate()) * roomEntity.getPrice();
 
         // temporary for test
         var testUser = userRepository.findById(1L);
@@ -79,7 +76,6 @@ public class BookingService {
 
         // TODO : to send a email of booking confirmation
 
-
         var response = CreateBookingResponse.builder()
             .orderId(bookingEntity.getOrderId())
             .roomTitle(roomEntity.getTitle())
@@ -98,7 +94,6 @@ public class BookingService {
 
         // temporary for test
         var userId = userRepository.findById(1L).get().getId();
-
 
         Pageable pageable = PageRequest.of(page, size);
         var bookingList = bookingRepository.findAllByUserId(userId, pageable);
