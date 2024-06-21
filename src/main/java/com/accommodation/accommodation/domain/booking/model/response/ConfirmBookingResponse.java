@@ -25,5 +25,7 @@ public class ConfirmBookingResponse {
 
         private LocalDateTime checkInDatetime;
         private LocalDateTime checkOutDatetime;
+
+        private long totalPrice;
     }
 }

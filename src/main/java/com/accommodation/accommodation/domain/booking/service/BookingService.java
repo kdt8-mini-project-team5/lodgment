@@ -11,6 +11,7 @@ import com.accommodation.accommodation.domain.booking.model.response.CreateBooki
 import com.accommodation.accommodation.domain.booking.repository.BookingRepository;
 import com.accommodation.accommodation.domain.room.repository.RoomRepository;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -36,10 +37,9 @@ public class BookingService {
         var roomEntity = roomRepository.findById(request.roomId())
             .orElseThrow(() -> new BookingException(BookingErrorCode.WRONG_ROOM_ID));
 
-        int roomMaxPeople = Integer.parseInt(roomEntity.getMaxPeople());
-        int roomMinPeople = Integer.parseInt(roomEntity.getMaxPeople());
-
-        if(roomMinPeople > request.numPeople() && roomMaxPeople < request.numPeople()) {
+        int roomMaxPeople = roomEntity.getMaxPeople();
+        int roomMinPeople = roomEntity.getMaxPeople();
+        if(roomMinPeople > request.numPeople() || roomMaxPeople < request.numPeople()) {
             throw new BookingException(BookingErrorCode.WRONG_OPTIONS);
         }
 
@@ -56,6 +56,10 @@ public class BookingService {
             throw new BookingException(BookingErrorCode.CONFLICT_BOOKING);
         }
 
+        // calculate totalPrice
+        long totalPrice2 = checkInDatetime.until(checkOutDatetime, ChronoUnit.DAYS) * roomEntity.getPrice();
+        long totalPrice = ChronoUnit.DAYS.between(checkInDatetime.toLocalDate(), checkOutDatetime.toLocalDate()) * roomEntity.getPrice();;
+
 
         // temporary for test
         var testUser = userRepository.findById(1L);
@@ -67,6 +71,7 @@ public class BookingService {
             .room(roomEntity)
             .checkInDatetime(checkInDatetime)
             .checkOutDatetime(checkOutDatetime)
+            .totalPrice(totalPrice)
             .build();
 
         bookingEntity = bookingRepository.save(bookingEntity);
@@ -80,6 +85,7 @@ public class BookingService {
             .roomTitle(roomEntity.getTitle())
             .checkInDate(request.checkInDate())
             .checkOutDate(request.checkOutDate())
+            .totalPrice(totalPrice)
             .build()
             ;
 
@@ -104,10 +110,11 @@ public class BookingService {
                     .accommodationTitle(booking.getRoom().getAccommodation().getTitle())
                     .roomTitle(booking.getRoom().getTitle())
                     .roomImg("") // TODO : 확인 필요 (이미지 1개만 전달해 주는 지?)
-                    .minPeople(Integer.parseInt(booking.getRoom().getMinPeople()))
-                    .maxPeople(Integer.parseInt(booking.getRoom().getMaxPeople()))
+                    .minPeople(booking.getRoom().getMinPeople())
+                    .maxPeople(booking.getRoom().getMaxPeople())
                     .checkInDatetime(booking.getCheckInDatetime())
                     .checkOutDatetime(booking.getCheckOutDatetime())
+                    .totalPrice(booking.getTotalPrice())
                     .build())
                 .collect(Collectors.toList())
             )

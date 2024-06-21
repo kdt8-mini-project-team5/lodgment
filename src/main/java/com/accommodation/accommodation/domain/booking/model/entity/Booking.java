@@ -31,6 +31,9 @@ public class Booking extends BaseTimeStamp {
     @Column
     private LocalDateTime checkOutDatetime;
 
+    @Column
+    private long totalPrice;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 

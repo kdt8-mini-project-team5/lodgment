@@ -27,10 +27,10 @@ public class Room extends BaseTimeStamp {
     private Long price;
 
     @Column
-    private String minPeople;
+    private int minPeople;
 
     @Column
-    private String maxPeople;
+    private int maxPeople;
 
     @ElementCollection(fetch = FetchType.LAZY)
     private List<String> images;

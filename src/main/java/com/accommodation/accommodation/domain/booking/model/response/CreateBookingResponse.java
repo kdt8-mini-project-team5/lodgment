@@ -15,4 +15,6 @@ public class CreateBookingResponse {
 
     private LocalDate checkOutDate;
 
+    private long totalPrice;
+
 }
