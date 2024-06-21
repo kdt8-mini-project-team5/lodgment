@@ -1,11 +1,13 @@
 package com.accommodation.accommodation.domain.accommodation.service;
 
 import com.accommodation.accommodation.domain.accommodation.model.entity.Accommodation;
-import com.accommodation.accommodation.domain.accommodation.model.response.AccommodationResponse;
+import com.accommodation.accommodation.domain.accommodation.model.response.AccommodationSimpleResponse;
+import com.accommodation.accommodation.domain.accommodation.model.response.AccommodationsResponse;
 import com.accommodation.accommodation.domain.accommodation.model.type.Category;
 import com.accommodation.accommodation.domain.accommodation.repository.AccommodationRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,29 +19,40 @@ public class AccommodationService {
 
     private final AccommodationRepository accommodationRepository;
 
-    public List<AccommodationResponse> findByCategory(
-        Category category, Long cursorId, Pageable pageable, Long cursorMinPrice) {
-        List<Accommodation> accommodationList;
+    public AccommodationsResponse findByCategory(Category category, Long cursorId, Pageable pageable, Long cursorMinPrice) {
+        Page<Accommodation> accommodationPage;
         if(cursorId == null) {
-            accommodationList = accommodationRepository.findByCategory(category, pageable);
+            accommodationPage = accommodationRepository.findByCategory(category, pageable);
         }else {
-            accommodationList = accommodationRepository.findByCategoryWithCursor(category, cursorId, pageable, cursorMinPrice);
+            accommodationPage = accommodationRepository.findByCategoryWithCursor(category, cursorId, pageable, cursorMinPrice);
         }
-        return accommodationList.stream()
-            .map(this::createAccommodationResponse)
-            .toList();
+
+        List<AccommodationSimpleResponse> list = accommodationPage.stream()
+            .map(this::createAccommodationResponse).toList();
+
+        boolean nextData = true;
+        if (accommodationPage.getTotalElements()-accommodationPage.getNumberOfElements()==0){
+            nextData = false;
+        }
+
+        return AccommodationsResponse.builder()
+                .accommodationSimpleResponseList(list)
+                .nextData(nextData)
+                .nextCursorId(list.get(list.size()-1).getId())
+                .nextCursorMinPrice(list.get(list.size()-1).getMinPrice())
+                .build();
     }
 
-    private AccommodationResponse createAccommodationResponse(Accommodation accommodation) {
+    private AccommodationSimpleResponse createAccommodationResponse(Accommodation accommodation) {
         if (accommodation.getImages().isEmpty()){
-            return AccommodationResponse.builder()
+            return AccommodationSimpleResponse.builder()
                 .id(accommodation.getId())
                 .title(accommodation.getTitle())
                 .minPrice(accommodation.getMinPrice())
                 .region(accommodation.getRegion())
                 .build();
         }
-        return AccommodationResponse.builder()
+        return AccommodationSimpleResponse.builder()
             .id(accommodation.getId())
             .title(accommodation.getTitle())
             .minPrice(accommodation.getMinPrice())

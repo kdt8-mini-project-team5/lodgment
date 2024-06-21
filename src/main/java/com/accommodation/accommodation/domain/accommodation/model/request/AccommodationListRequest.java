@@ -7,5 +7,5 @@ public record AccommodationListRequest(
     @CategoryValidation String category,
     Long cursorMinPrice,
     Long cursorId,
-    @Max(value = 10, message = "size는 최대 {value}입니다.") int size){
+    @Max(value = 20, message = "size는 최대 {value}입니다.") int size){
 }
