@@ -115,6 +115,7 @@ public class BookingService {
                     .build())
                 .collect(Collectors.toList())
             )
+            .totalElements(bookingList.getTotalElements())
             .build();
 
         return ResponseEntity.ok().body(bookingResponse);

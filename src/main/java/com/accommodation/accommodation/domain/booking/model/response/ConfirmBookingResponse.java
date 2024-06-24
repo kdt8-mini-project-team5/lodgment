@@ -10,6 +10,8 @@ import lombok.Data;
 public class ConfirmBookingResponse {
     private List<BookingResponse> bookingList;
 
+    private long totalElements;
+
     @Data
     @Builder
     public static class BookingResponse {
