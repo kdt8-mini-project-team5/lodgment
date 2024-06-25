@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = EmailValidator.class)
 public @interface PasswordValidation {
 
-    String message() default "Invalid email format";
+    String message() default "Invalid password format";
 
     Class<?>[] groups() default {};
 

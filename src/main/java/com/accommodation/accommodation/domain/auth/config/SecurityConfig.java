@@ -73,6 +73,7 @@ public class SecurityConfig {
         filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
         return filter;
     }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
