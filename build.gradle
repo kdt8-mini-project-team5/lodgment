@@ -47,6 +47,13 @@ dependencies {
 	implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.2'
 
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	testImplementation 'org.springframework.security:spring-security-test'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
+	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
 }
 
 tasks.named('test') {
