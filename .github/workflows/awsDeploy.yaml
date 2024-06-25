@@ -42,10 +42,9 @@ jobs:
 
       - name: Execute Server Init Script
         uses: appleboy/ssh-action@master
-        env:
-          PRIVATE_KEY: ${{ secrets.AWS_PASSWORD }}
-          HOSTNAME: ${{secrets.AWS_HOST}}
-          USER_NAME: ubuntu
         with:
+          username: ubuntu
+          host: ${{ secrets.AWS_HOST }}
+          key: ${{ secrets.AWS_PASSWORD }}
           script_stop: true
           script: chmod +x /home/student/docker_script.sh && sh /home/student/docker_script.sh
