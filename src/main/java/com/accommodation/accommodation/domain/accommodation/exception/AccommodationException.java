@@ -7,7 +7,7 @@ public class AccommodationException extends HttpStatusCodeException {
 
     private final ErrorCode errorCode;
 
-    protected AccommodationException(ErrorCode errorCode) {
+    public AccommodationException(ErrorCode errorCode) {
         super(errorCode.getStatusCode(), errorCode.getStatusText());
         this.errorCode = errorCode;
     }

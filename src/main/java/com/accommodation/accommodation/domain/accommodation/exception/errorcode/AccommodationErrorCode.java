@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum AccommodationErrorCode implements ErrorCode {
 
-
     ;
 
     private final String statusText;
