@@ -11,6 +11,7 @@ import com.accommodation.accommodation.global.util.EmailUtil;
 import com.accommodation.accommodation.global.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,7 @@ public class RegisterService {
     private final UserRepository userRepository;
     private final EmailUtil emailUtil;
     private final RedisUtil redisUtil;
+    private final PasswordEncoder pe;
 
     @Transactional
     public ResponseEntity singUp(RegisterRequest request) {
@@ -34,7 +36,7 @@ public class RegisterService {
         userRepository.save(
                 User.builder()
                         .email(request.email())
-                        .password(request.password()) //TODO:security 준비 될시 암호화
+                        .password(pe.encode(request.password()))
                         .name(request.name())
                         .build()
         );
