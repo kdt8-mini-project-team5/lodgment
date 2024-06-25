@@ -1,15 +1,26 @@
 package com.accommodation.accommodation.domain.accommodation.model.entity;
 
 import com.accommodation.accommodation.domain.accommodation.model.type.Category;
-import com.accommodation.accommodation.domain.booking.model.entity.Booking;
 import com.accommodation.accommodation.domain.interest.model.entity.Interest;
 import com.accommodation.accommodation.domain.room.model.entity.Room;
 import com.accommodation.accommodation.global.model.entity.BaseTimeStamp;
-import jakarta.persistence.*;
-import lombok.*;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import java.time.LocalTime;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 @Entity
 @Getter
@@ -47,10 +58,10 @@ public class Accommodation extends BaseTimeStamp {
     private Category category; // TODO : enum으로
 
     @Column
-    private LocalTime check_in;
+    private LocalTime checkIn;
 
     @Column
-    private LocalTime check_out;
+    private LocalTime checkOut;
 
     @Column
     private boolean parkingLodging; // parking 이 어떨지..
@@ -88,6 +99,7 @@ public class Accommodation extends BaseTimeStamp {
     @Column
     private Long minPrice;
 
+    @BatchSize(size = 100)
     @ElementCollection(fetch = FetchType.LAZY)
     private List<String> images;
 

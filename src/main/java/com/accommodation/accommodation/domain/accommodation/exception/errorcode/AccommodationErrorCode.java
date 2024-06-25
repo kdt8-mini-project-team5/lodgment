@@ -9,7 +9,8 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum AccommodationErrorCode implements ErrorCode {
 
-
+    NOT_FOUND("숙박 정보가 존재하지 않습니다.", HttpStatus.NOT_FOUND),
+    INVALID_DATE("체크인 또는 체크아웃 날짜가 유효하지 않습니다.", HttpStatus.BAD_REQUEST);
     ;
 
     private final String statusText;

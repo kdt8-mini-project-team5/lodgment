@@ -32,7 +32,28 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+	//actuator
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	//redis
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '3.1.2'
+
+	//email
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	//ELK에 필요한 라이브러리
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+	implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.2'
+
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	testImplementation 'org.springframework.security:spring-security-test'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
+	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
 }
 
 tasks.named('test') {
@@ -41,4 +62,8 @@ tasks.named('test') {
 
 bootJar {
 	archiveFileName = 'Accommodation.jar'
+}
+
+tasks.withType(JavaCompile){
+	options.encoding = "UTF-8"
 }

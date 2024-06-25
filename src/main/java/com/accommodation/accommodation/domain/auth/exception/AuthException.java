@@ -8,7 +8,7 @@ public class AuthException extends HttpStatusCodeException {
 
     private final ErrorCode errorCode;
 
-    protected AuthException(ErrorCode errorCode) {
+    public AuthException(ErrorCode errorCode) {
         super(errorCode.getStatusCode(), errorCode.getStatusText());
         this.errorCode = errorCode;
     }
