@@ -48,10 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/register/**", "/login").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/api/accommodation/**").permitAll()
-<<<<<<< HEAD
-=======
                         .requestMatchers("/api/accommodation").permitAll()
->>>>>>> 999b6575392350cf5573d79cc6e38d5d6c9244ee
                         .anyRequest().authenticated());
 
         http.addFilterBefore(loginFilter(), UsernamePasswordAuthenticationFilter.class);
