@@ -4,6 +4,7 @@ import com.accommodation.accommodation.domain.auth.model.request.EmailCheckReque
 import com.accommodation.accommodation.domain.auth.model.request.EmailSendRequest;
 import com.accommodation.accommodation.domain.auth.model.request.RegisterRequest;
 import com.accommodation.accommodation.domain.auth.service.RegisterService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,21 +18,21 @@ public class RegisterController {
 
     @PostMapping
     public ResponseEntity singUp(
-            @RequestBody RegisterRequest request
+            @RequestBody @Valid RegisterRequest request
     ) {
         return registerService.singUp(request);
     }
 
     @PostMapping("/email")
     public ResponseEntity emailSend(
-            @RequestBody EmailSendRequest request
+            @RequestBody @Valid EmailSendRequest request
     ) {
         return registerService.emailSend(request);
     }
 
     @PostMapping("/email/successKey")
     public ResponseEntity emailCheck(
-            @RequestBody EmailCheckRequest request
+            @RequestBody @Valid EmailCheckRequest request
     ) {
         return registerService.emailCheck(request);
     }

@@ -31,6 +31,9 @@ public class RegisterService {
     @Transactional
     public ResponseEntity singUp(RegisterRequest request) {
 
+        if (checkEmail(request.email()))
+            throw new AuthException(AuthErrorCode.EMAIL_SAME);
+
         checkAccessKey(request.email(), request.accessKey());
 
         userRepository.save(
@@ -46,6 +49,9 @@ public class RegisterService {
 
     @Transactional
     public ResponseEntity emailSend(EmailSendRequest request) {
+
+        if (checkEmail(request.email()))
+            throw new AuthException(AuthErrorCode.EMAIL_SAME);
 
         String successKey = getSuccessKey();
 
@@ -83,6 +89,10 @@ public class RegisterService {
             randomStr += random.nextInt(9);
         }
         return randomStr;
+    }
+
+    private boolean checkEmail(String email) {
+        return !userRepository.findByEmail(email).isEmpty();
     }
 
 }
