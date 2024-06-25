@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Target({ ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = EmailValidator.class)
-public @interface EmailValidation {
+public @interface PasswordValidation {
 
     String message() default "Invalid email format";
 
