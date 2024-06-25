@@ -1,5 +1,6 @@
 package com.accommodation.accommodation.global.handler.exception;
 
+import com.accommodation.accommodation.domain.accommodation.exception.AccommodationException;
 import com.accommodation.accommodation.global.model.response.ErrorResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,15 @@ public class HandlerException {
 
     @ExceptionHandler(HttpStatusCodeException.class)
     public ResponseEntity authException(HttpStatusCodeException e) {
+
+        log.error(e.getStatusText());
+
+        return ResponseEntity.status(e.getStatusCode())
+                .body(new ErrorResponse(e.getStatusCode().value(), e.getStatusText()));
+    }
+
+    @ExceptionHandler(AccommodationException.class)
+    public ResponseEntity<ErrorResponse> accommodationException(AccommodationException e) {
 
         log.error(e.getStatusText());
 
