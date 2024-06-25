@@ -7,7 +7,7 @@ public class BookingException extends HttpStatusCodeException {
 
     private final ErrorCode errorCode;
 
-    protected BookingException(ErrorCode errorCode) {
+    public BookingException(ErrorCode errorCode) {
         super(errorCode.getStatusCode(), errorCode.getStatusText());
         this.errorCode = errorCode;
     }

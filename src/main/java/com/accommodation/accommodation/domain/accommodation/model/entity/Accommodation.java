@@ -58,10 +58,10 @@ public class Accommodation extends BaseTimeStamp {
     private Category category; // TODO : enum으로
 
     @Column
-    private LocalTime check_in;
+    private LocalTime checkIn;
 
     @Column
-    private LocalTime check_out;
+    private LocalTime checkOut;
 
     @Column
     private boolean parkingLodging; // parking 이 어떨지..
