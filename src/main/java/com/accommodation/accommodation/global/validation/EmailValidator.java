@@ -12,7 +12,7 @@ public class EmailValidator implements ConstraintValidator<EmailValidation, Stri
 
     private Pattern pattern;
     private static final String EMAIL_PATTERN =
-            "\\b[A-Z0-9._%-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b";
+            "\\b[A-Za-z0-9._%-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b";
 
     @Override
     public void initialize(EmailValidation constraintAnnotation) {
