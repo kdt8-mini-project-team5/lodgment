@@ -1,5 +1,6 @@
 package com.accommodation.accommodation.domain.booking.service;
 
+import com.accommodation.accommodation.domain.auth.config.model.CustomUserDetails;
 import com.accommodation.accommodation.domain.auth.repository.UserRepository;
 import com.accommodation.accommodation.domain.booking.exception.BookingException;
 import com.accommodation.accommodation.domain.booking.exception.errorcode.BookingErrorCode;
@@ -32,7 +33,10 @@ public class BookingService {
     private final UserRepository userRepository;
 
     @Transactional
-    public ResponseEntity createBooking(CreateBookingRequest request) {
+    public ResponseEntity createBooking(
+        CustomUserDetails customUserDetails,
+        CreateBookingRequest request
+        ) {
 
         var roomEntity = roomRepository.findById(request.roomId())
             .orElseThrow(() -> new BookingException(BookingErrorCode.WRONG_ROOM_ID));
@@ -59,12 +63,11 @@ public class BookingService {
 
         long totalPrice = ChronoUnit.DAYS.between(checkInDatetime.toLocalDate(), checkOutDatetime.toLocalDate()) * roomEntity.getPrice();
 
-        // temporary for test
-        var testUser = userRepository.findById(1L);
+        var currentUser = userRepository.findById(customUserDetails.getUserId())
+            .orElseThrow(() -> new BookingException(BookingErrorCode.WRONG_OPTIONS));
 
-        // TODO : change user after Spring Security setup
         var bookingEntity = Booking.builder()
-            .user(testUser.get())
+            .user(currentUser)
             .orderId(UUID.randomUUID().toString())
             .room(roomEntity)
             .checkInDatetime(checkInDatetime)
@@ -92,13 +95,17 @@ public class BookingService {
 
 
     @Transactional(readOnly = true)
-    public ResponseEntity confirmBooking(int page, int size) {
+    public ResponseEntity confirmBooking(
+        CustomUserDetails customUserDetails,
+        int page,
+        int size
+    ) {
 
-        // temporary for test
-        var userId = userRepository.findById(1L).get().getId();
+        var currentUser = userRepository.findById(customUserDetails.getUserId())
+            .orElseThrow(() -> new BookingException(BookingErrorCode.WRONG_OPTIONS));
 
         Pageable pageable = PageRequest.of(page, size);
-        var bookingList = bookingRepository.findAllByUserId(userId, pageable);
+        var bookingList = bookingRepository.findAllByUserId(currentUser.getId(), pageable);
 
         var bookingResponse = ConfirmBookingResponse.builder()
             .bookingList(bookingList.stream()
@@ -106,7 +113,7 @@ public class BookingService {
                     .orderId(booking.getOrderId())
                     .accommodationTitle(booking.getRoom().getAccommodation().getTitle())
                     .roomTitle(booking.getRoom().getTitle())
-                    .roomImg("") // TODO : 확인 필요 (이미지 1개만 전달해 주는 지?)
+                    .roomImg("") // TODO : 확인 필요 (이미지 1개만 전달해 주는 지)
                     .minPeople(booking.getRoom().getMinPeople())
                     .maxPeople(booking.getRoom().getMaxPeople())
                     .checkInDatetime(booking.getCheckInDatetime())
