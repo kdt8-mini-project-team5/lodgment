@@ -16,9 +16,4 @@ public interface AccommodationRepository extends JpaRepository<Accommodation, Lo
     @Query("SELECT a FROM Accommodation a WHERE a.category = :category ORDER BY a.minPrice , a.id DESC") // minPrice 기반 정렬
     Page<Accommodation> findByCategory(Category category, Pageable pageable);
 
-/*    @Query("SELECT a FROM Accommodation a WHERE a.category = :category AND (a.minPrice = :minPrice AND a.id < :cursorId) or a.minPrice > :minPrice ORDER BY a.minPrice, a.id DESC") // minPrice 기반 정렬
-    List<Accommodation> findByCategoryWithCursor(Category category,Long cursorId, Pageable pageable, Long minPrice);
-
-    @Query("SELECT a FROM Accommodation a WHERE a.category = :category ORDER BY a.minPrice , a.id DESC") // minPrice 기반 정렬
-    List<Accommodation> findByCategory(Category category, Pageable pageable);*/
 }

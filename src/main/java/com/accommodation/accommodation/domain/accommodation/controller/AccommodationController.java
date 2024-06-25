@@ -32,15 +32,4 @@ public class AccommodationController {
         return ResponseEntity.ok(response);
     }
 
-/*    @GetMapping()
-    public ResponseEntity findAll(
-        @ModelAttribute @Valid AccommodationListRequest accommodationListRequest
-        ){
-        Page<AccommodationSimpleResponse> accommodationSimpleResponseList = accommodationService.findByCategory(
-            Category.valueOfType(accommodationListRequest.category()),
-            accommodationListRequest.cursorId(),
-            PageRequest.of(0, accommodationListRequest.size()),
-            accommodationListRequest.cursorMinPrice());
-        return ResponseEntity.ok(accommodationSimpleResponseList);
-    }*/
 }
