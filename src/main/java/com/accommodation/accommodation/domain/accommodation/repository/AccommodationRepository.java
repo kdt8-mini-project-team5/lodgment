@@ -3,6 +3,8 @@ package com.accommodation.accommodation.domain.accommodation.repository;
 import com.accommodation.accommodation.domain.accommodation.model.entity.Accommodation;
 import com.accommodation.accommodation.domain.accommodation.model.type.Category;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,5 +17,8 @@ public interface AccommodationRepository extends JpaRepository<Accommodation, Lo
 
     @Query("SELECT a FROM Accommodation a WHERE a.category = :category ORDER BY a.minPrice , a.id DESC") // minPrice 기반 정렬
     Page<Accommodation> findByCategory(Category category, Pageable pageable);
+
+    @Query("SELECT a FROM Accommodation a JOIN FETCH a.roomList where a.id = :id")
+    Optional<Accommodation> findAccommodationDetailById(Long id);
 
 }
