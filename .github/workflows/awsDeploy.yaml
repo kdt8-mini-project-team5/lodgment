@@ -40,11 +40,20 @@ jobs:
           docker build -t ghcr.io/$GITHUB_REPOSITORY/$IMAGE_NAME:$IMAGE_TAG .
           docker push ghcr.io/$GITHUB_REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
 
-      - name: Execute Server Init Script
+      - name: Execute Server1 Init Script
         uses: appleboy/ssh-action@master
         with:
           username: ubuntu
           host: ${{ secrets.AWS_HOST }}
+          key: ${{ secrets.AWS_PASSWORD }}
+          script_stop: true
+          script: chmod +x /home/student/docker_script.sh && sh /home/student/docker_script.sh
+
+      - name: Execute Server2 Init Script
+        uses: appleboy/ssh-action@master
+        with:
+          username: ubuntu
+          host: ${{ secrets.AWS_HOST1 }}
           key: ${{ secrets.AWS_PASSWORD }}
           script_stop: true
           script: chmod +x /home/student/docker_script.sh && sh /home/student/docker_script.sh
