@@ -40,4 +40,7 @@ public class Booking extends BaseTimeStamp {
     @ManyToOne(fetch = FetchType.LAZY)
     private Room room;
 
+    @Version
+    private Long version;
+
 }
