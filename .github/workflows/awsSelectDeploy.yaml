@@ -3,7 +3,7 @@ name: Accommodation AWS CI/CD
 on:
   push:
     branches:
-      - aws/select
+      - awsSelect
 
 jobs:
   build-and-push:
