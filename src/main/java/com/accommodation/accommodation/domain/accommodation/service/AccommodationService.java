@@ -79,7 +79,7 @@ public class AccommodationService {
 
     @Transactional(readOnly = true)
     public AccommodationDetailResponse getAccommodationById(Long id, LocalDate checkInDate, LocalDate checkOutDate) {
-        Accommodation accommodation = accommodationRepository.findById(id)
+        Accommodation accommodation = accommodationRepository.findAccommodationDetailById(id)
                 .orElseThrow(() -> new AccommodationException(AccommodationErrorCode.NOT_FOUND));
 
         if (checkInDate != null && checkOutDate != null && checkInDate.isAfter(checkOutDate)) {
