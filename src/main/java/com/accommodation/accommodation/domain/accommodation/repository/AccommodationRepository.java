@@ -2,7 +2,6 @@ package com.accommodation.accommodation.domain.accommodation.repository;
 
 import com.accommodation.accommodation.domain.accommodation.model.entity.Accommodation;
 import com.accommodation.accommodation.domain.accommodation.model.type.Category;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
