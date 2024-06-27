@@ -99,7 +99,6 @@ public class Accommodation extends BaseTimeStamp {
     @Column
     private Long minPrice;
 
-    @BatchSize(size = 100)
     @ElementCollection(fetch = FetchType.LAZY)
     private List<String> images;
 
