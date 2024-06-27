@@ -55,7 +55,7 @@ public class Accommodation extends BaseTimeStamp {
     private String tel;
 
     @Enumerated(EnumType.STRING)
-    private Category category; // TODO : enum으로
+    private Category category;
 
     @Column
     private LocalTime checkIn;
@@ -64,7 +64,7 @@ public class Accommodation extends BaseTimeStamp {
     private LocalTime checkOut;
 
     @Column
-    private boolean parkingLodging; // parking 이 어떨지..
+    private boolean parkingLodging;
 
     @Column
     private boolean tv;
