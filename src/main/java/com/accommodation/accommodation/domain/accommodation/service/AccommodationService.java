@@ -8,12 +8,15 @@ import com.accommodation.accommodation.domain.accommodation.model.response.Accom
 import com.accommodation.accommodation.domain.accommodation.model.response.AccommodationsResponse;
 import com.accommodation.accommodation.domain.accommodation.model.type.Category;
 import com.accommodation.accommodation.domain.accommodation.model.response.AccommodationDetailResponse;
-import com.accommodation.accommodation.domain.accommodation.model.response.AccommodationDetailResponse.RoomResponse;
 import com.accommodation.accommodation.domain.accommodation.repository.AccommodationRepository;
 
+import com.accommodation.accommodation.domain.room.model.entity.Room;
+import com.accommodation.accommodation.domain.room.model.response.RoomResponse;
+import com.accommodation.accommodation.domain.room.repository.RoomRepository;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +32,7 @@ import java.util.stream.Collectors;
 public class AccommodationService {
 
     private final AccommodationRepository accommodationRepository;
+    private final RoomRepository roomRepository;
 
     @Cacheable(cacheNames = "accommodationList", key = "#category.name() + ':' + #cursorId + ':' + #cursorMinPrice")
     @Transactional(readOnly = true)
@@ -82,7 +86,7 @@ public class AccommodationService {
     }
 
 
-    @Cacheable(cacheNames = "accommodation", key = "#id")
+
     @Transactional(readOnly = true)
     public AccommodationDetailResponse getAccommodationById(Long id, LocalDate checkInDate, LocalDate checkOutDate) {
         Accommodation accommodation = accommodationRepository.findAccommodationDetailById(id)
@@ -92,41 +96,78 @@ public class AccommodationService {
             throw new AccommodationException(AccommodationErrorCode.INVALID_DATE);
         }
 
-        accommodation.getImages().size();
-        accommodation.getRoomList().forEach(room -> room.getImages().size());
+        List<Room> roomList = roomRepository.findRoomDetailByAccommodationId(
+            accommodation.getId());
 
         return AccommodationDetailResponse.builder()
-                .longitude(Double.parseDouble(accommodation.getLongitude()))
-                .latitude(Double.parseDouble(accommodation.getLatitude()))
-                .title(accommodation.getTitle())
-                .info(accommodation.getInfo())
-                .price(accommodation.getMinPrice())
-                .checkIn(accommodation.getCheckIn().toString())
-                .checkOut(accommodation.getCheckOut().toString())
-                .shower(accommodation.isShower())
-                .aircone(accommodation.isAircone())
-                .tv(accommodation.isTv())
-                .pc(accommodation.isPc())
-                .internet(accommodation.isInternet())
-                .refrigerator(accommodation.isRefrigerator())
-                .toiletries(accommodation.isToiletries())
-                .kitchenware(accommodation.isKitchenware())
-                .parkingLodging(accommodation.isParkingLodging())
-                .address(accommodation.getAddress())
-                .tel(accommodation.getTel())
-                .dryer(accommodation.isDryer())
-                .roomCount(accommodation.getRoomList().size())
-                .img(accommodation.getImages())
-                .room(accommodation.getRoomList().stream()
-                        .map(room -> RoomResponse.builder()
-                                .title(room.getTitle())
-                                .price(room.getPrice())
-                                .minPeople(room.getMinPeople())
-                                .maxPeople(room.getMaxPeople())
-                                .img(room.getImages())
-                                .build())
-                        .collect(Collectors.toList()))
-                .build();
+            .longitude(Double.parseDouble(accommodation.getLongitude()))
+            .latitude(Double.parseDouble(accommodation.getLatitude()))
+            .title(accommodation.getTitle())
+            .info(accommodation.getInfo())
+            .price(accommodation.getMinPrice())
+            .checkIn(accommodation.getCheckIn().toString())
+            .checkOut(accommodation.getCheckOut().toString())
+            .shower(accommodation.isShower())
+            .aircone(accommodation.isAircone())
+            .tv(accommodation.isTv())
+            .pc(accommodation.isPc())
+            .internet(accommodation.isInternet())
+            .refrigerator(accommodation.isRefrigerator())
+            .toiletries(accommodation.isToiletries())
+            .kitchenware(accommodation.isKitchenware())
+            .parkingLodging(accommodation.isParkingLodging())
+            .address(accommodation.getAddress())
+            .tel(accommodation.getTel())
+            .dryer(accommodation.isDryer())
+            .img(accommodation.getImages())
+            .room(roomList.stream()
+                .map(room -> RoomResponse.builder()
+                    .title(room.getTitle())
+                    .price(room.getPrice())
+                    .minPeople(room.getMinPeople())
+                    .maxPeople(room.getMaxPeople())
+                    .img(room.getImages())
+                    .build())
+                .toList())
+            .roomCount(roomList.size())
+            .build();
     }
+
+/*    private AccommodationDetailResponse createAccommodationDetailResponse(Accommodation accommodation){
+        List<Room> roomList = roomRepository.findRoomDetailByAccommodationId(
+            accommodation.getId());
+        return AccommodationDetailResponse.builder()
+            .longitude(Double.parseDouble(accommodation.getLongitude()))
+            .latitude(Double.parseDouble(accommodation.getLatitude()))
+            .title(accommodation.getTitle())
+            .info(accommodation.getInfo())
+            .price(accommodation.getMinPrice())
+            .checkIn(accommodation.getCheckIn().toString())
+            .checkOut(accommodation.getCheckOut().toString())
+            .shower(accommodation.isShower())
+            .aircone(accommodation.isAircone())
+            .tv(accommodation.isTv())
+            .pc(accommodation.isPc())
+            .internet(accommodation.isInternet())
+            .refrigerator(accommodation.isRefrigerator())
+            .toiletries(accommodation.isToiletries())
+            .kitchenware(accommodation.isKitchenware())
+            .parkingLodging(accommodation.isParkingLodging())
+            .address(accommodation.getAddress())
+            .tel(accommodation.getTel())
+            .dryer(accommodation.isDryer())
+            .img(accommodation.getImages())
+            .room(roomList.stream()
+                .map(room -> RoomResponse.builder()
+                    .title(room.getTitle())
+                    .price(room.getPrice())
+                    .minPeople(room.getMinPeople())
+                    .maxPeople(room.getMaxPeople())
+                    .img(room.getImages())
+                    .build())
+                .toList())
+            .roomCount(roomList.size())
+            .build();
+    }*/
 
 }

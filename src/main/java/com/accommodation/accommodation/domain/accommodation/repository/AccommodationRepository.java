@@ -8,6 +8,7 @@ import io.lettuce.core.dynamic.annotation.Param;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,7 +27,8 @@ public interface AccommodationRepository extends JpaRepository<Accommodation, Lo
     @Query("SELECT a.images FROM Accommodation a WHERE a.id in :ids")
     List<List<String>> findAccommodationImagesByIds(List<Long> ids);
 
-    @Query("SELECT a FROM Accommodation a JOIN FETCH a.roomList where a.id = :id")
+    @Cacheable(cacheNames = "accommodation", key = "#id")
+    @Query("SELECT a FROM Accommodation a JOIN FETCH a.images where a.id = :id")
     Optional<Accommodation> findAccommodationDetailById(Long id);
 
 }
