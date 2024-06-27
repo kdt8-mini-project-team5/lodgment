@@ -3,6 +3,7 @@ package com.accommodation.accommodation.domain.accommodation.service;
 import com.accommodation.accommodation.domain.accommodation.exception.AccommodationException;
 import com.accommodation.accommodation.domain.accommodation.exception.errorcode.AccommodationErrorCode;
 import com.accommodation.accommodation.domain.accommodation.model.entity.Accommodation;
+import com.accommodation.accommodation.domain.accommodation.model.response.AccommodationSimpleDTO;
 import com.accommodation.accommodation.domain.accommodation.model.response.AccommodationSimpleResponse;
 import com.accommodation.accommodation.domain.accommodation.model.response.AccommodationsResponse;
 import com.accommodation.accommodation.domain.accommodation.model.type.Category;
@@ -18,9 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-
 import java.time.LocalDate;
 import java.util.stream.Collectors;
 
@@ -30,51 +28,50 @@ import java.util.stream.Collectors;
 public class AccommodationService {
 
     private final AccommodationRepository accommodationRepository;
-
-    @PersistenceContext
-    private EntityManager entityManager;
-
+    
+    @Transactional(readOnly = true)
     public AccommodationsResponse findByCategory(Category category, Long cursorId, Pageable pageable, Long cursorMinPrice) {
-        Page<Accommodation> accommodationPage;
+        Page<AccommodationSimpleDTO> accommodationPage;
         if (cursorId == null) {
             accommodationPage = accommodationRepository.findByCategory(category, pageable);
         } else {
             accommodationPage = accommodationRepository.findByCategoryWithCursor(category, cursorId, pageable, cursorMinPrice);
         }
+        // 숙소데이터 가져와서 응답용으로 변환
+        List<AccommodationSimpleResponse> responseList= accommodationPage.stream()
+            .map(this::createAccommodationResponse)
+            .toList();
 
+        // id 기반 이미지 가져오는 로직
+        List<Long> idList = responseList.stream()
+                .map(AccommodationSimpleResponse::getId).toList();
+        List<List<String>> accommodationImagesByIds = accommodationRepository.findAccommodationImagesByIds(idList);
 
-        List<AccommodationSimpleResponse> list = accommodationPage.stream()
-                .map(this::createAccommodationResponse).toList();
+        for(int i = 0; i< responseList.size(); i++){
+            responseList.get(i).setThumbnailUrl(accommodationImagesByIds.get(accommodationImagesByIds.size() - 1 - (i*2)).get(0));
+        }
 
         boolean nextData = true;
         if (accommodationPage.getTotalElements() - accommodationPage.getNumberOfElements() == 0) {
             nextData = false;
         }
 
+
         return AccommodationsResponse.builder()
-                .accommodationSimpleResponseList(list)
-                .nextData(nextData)
-                .nextCursorId(list.get(list.size() - 1).getId())
-                .nextCursorMinPrice(list.get(list.size() - 1).getMinPrice())
-                .build();
+            .accommodationSimpleResponseList(responseList)
+            .nextData(nextData)
+            .nextCursorId(responseList.get(responseList.size() - 1).getId())
+            .nextCursorMinPrice(responseList.get(responseList.size() - 1).getMinPrice())
+            .build();
     }
 
-    private AccommodationSimpleResponse createAccommodationResponse(Accommodation accommodation) {
-        if (accommodation.getImages().isEmpty()) {
-            return AccommodationSimpleResponse.builder()
-                    .id(accommodation.getId())
-                    .title(accommodation.getTitle())
-                    .minPrice(accommodation.getMinPrice())
-                    .region(accommodation.getRegion())
-                    .build();
-        }
+    private AccommodationSimpleResponse createAccommodationResponse(AccommodationSimpleDTO accommodationSimpleDTO) {
         return AccommodationSimpleResponse.builder()
-                .id(accommodation.getId())
-                .title(accommodation.getTitle())
-                .minPrice(accommodation.getMinPrice())
-                .region(accommodation.getRegion())
-                .thumbnailUrl(accommodation.getImages().get(1)) // 0은 대표이미지 1은 썸네일
-                .build();
+            .id(accommodationSimpleDTO.getId())
+            .title(accommodationSimpleDTO.getTitle())
+            .minPrice(accommodationSimpleDTO.getMinPrice())
+            .region(accommodationSimpleDTO.getRegion())
+            .build();
     }
 
     @Transactional(readOnly = true)
