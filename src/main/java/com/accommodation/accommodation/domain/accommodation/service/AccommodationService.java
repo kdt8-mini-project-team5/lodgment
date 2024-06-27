@@ -30,7 +30,7 @@ public class AccommodationService {
 
     private final AccommodationRepository accommodationRepository;
 
-    @Cacheable(cacheNames = "accommodationList", key = "#id")
+    @Cacheable(cacheNames = "accommodationList", key = "#category.name() + ':' + #cursorId + ':' + #cursorMinPrice")
     @Transactional(readOnly = true)
     public AccommodationsResponse findByCategory(Category category, Long cursorId, Pageable pageable, Long cursorMinPrice) {
         Page<AccommodationSimpleDTO> accommodationPage;
@@ -43,6 +43,10 @@ public class AccommodationService {
         List<AccommodationSimpleResponse> responseList= accommodationPage.stream()
             .map(this::createAccommodationResponse)
             .toList();
+
+        if (responseList.isEmpty()){
+            throw new AccommodationException(AccommodationErrorCode.NOT_FOUND);
+        }
 
         // id 기반 이미지 가져오는 로직
         List<Long> idList = responseList.stream()
@@ -57,6 +61,7 @@ public class AccommodationService {
         if (accommodationPage.getTotalElements() - accommodationPage.getNumberOfElements() == 0) {
             nextData = false;
         }
+
 
 
         return AccommodationsResponse.builder()
@@ -77,6 +82,7 @@ public class AccommodationService {
     }
 
 
+    @Cacheable(cacheNames = "accommodation", key = "#id")
     @Transactional(readOnly = true)
     public AccommodationDetailResponse getAccommodationById(Long id, LocalDate checkInDate, LocalDate checkOutDate) {
         Accommodation accommodation = accommodationRepository.findAccommodationDetailById(id)

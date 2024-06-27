@@ -38,6 +38,8 @@ dependencies {
 	//redis
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '3.1.2'
 
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
+
 	//email
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
