@@ -14,6 +14,7 @@ import com.accommodation.accommodation.domain.accommodation.repository.Accommoda
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,8 @@ import java.util.stream.Collectors;
 public class AccommodationService {
 
     private final AccommodationRepository accommodationRepository;
-    
+
+    @Cacheable(cacheNames = "accommodationList", key = "#id")
     @Transactional(readOnly = true)
     public AccommodationsResponse findByCategory(Category category, Long cursorId, Pageable pageable, Long cursorMinPrice) {
         Page<AccommodationSimpleDTO> accommodationPage;
@@ -73,6 +75,7 @@ public class AccommodationService {
             .region(accommodationSimpleDTO.getRegion())
             .build();
     }
+
 
     @Transactional(readOnly = true)
     public AccommodationDetailResponse getAccommodationById(Long id, LocalDate checkInDate, LocalDate checkOutDate) {
