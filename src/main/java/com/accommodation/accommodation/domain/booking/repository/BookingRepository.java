@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    @Lock(LockModeType.PESSIMISTIC_FORCE_INCREMENT)
     @Query("SELECT COUNT(b) FROM Booking b WHERE b.room.id = :roomId " +
         "AND (b.checkInDatetime < :checkOutDatetime AND b.checkOutDatetime > :checkInDatetime)")
     long checkConflictingBookings(
@@ -24,6 +23,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
         @Param("checkInDatetime") LocalDateTime checkInDatetime,
         @Param("checkOutDatetime") LocalDateTime checkOutDatetime);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Modifying
     @Transactional
     @Query(
