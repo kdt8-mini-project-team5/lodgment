@@ -30,17 +30,17 @@ class BookingServiceTest {
     @Autowired
     BookingLockFacade bookingLockFacade;
 
-//    @AfterEach
-//    public void after() {
-//        bookingRepository.deleteAll();
-//    }
+    @AfterEach
+    public void after() {
+        bookingRepository.deleteAll();
+    }
 
     @Test
     public void 동시에_100개의_요청() throws InterruptedException {
         int threadCount = 100;
 
         String email = "test1@test.com";
-        CustomUserDetails customUserDetails = new CustomUserDetails(null, email, null);
+        CustomUserDetails customUserDetails = new CustomUserDetails(1L, email, email);
 
         long roomId = 1L;
         int numPeople = 2;
@@ -59,8 +59,6 @@ class BookingServiceTest {
                 try {
                     // bookingService.createBooking(customUserDetails, request);
                     bookingLockFacade.createBooking(customUserDetails, request);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
                 } finally {
                     latch.countDown();
                 }
