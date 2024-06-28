@@ -29,7 +29,7 @@ public class RedisConfig {
         redisStandaloneConfiguration.setHostName(host);
         redisStandaloneConfiguration.setPort(port);
 
-        if(!password.equals("no")) {
+        if(!password.equals("false")) {
             redisStandaloneConfiguration.setPassword(password);
         }
 

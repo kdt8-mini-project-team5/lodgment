@@ -5,8 +5,9 @@ import com.accommodation.accommodation.domain.booking.exception.BookingException
 import com.accommodation.accommodation.domain.booking.exception.errorcode.BookingErrorCode;
 import com.accommodation.accommodation.domain.booking.model.request.CreateBookingRequest;
 import com.accommodation.accommodation.domain.booking.service.BookingService;
-import com.accommodation.accommodation.global.model.repository.RedisLockRepository;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import org.redisson.api.RedissonClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
@@ -14,32 +15,30 @@ import org.springframework.stereotype.Component;
 @Component
 public class BookingLockFacade {
 
-    private final RedisLockRepository redisLockRepository;
+    private final RedissonClient redissonClient;
     private final BookingService bookingService;
 
     public ResponseEntity createBooking (
         CustomUserDetails customUserDetails,
         CreateBookingRequest request
-    ) throws InterruptedException {
-
-        ResponseEntity response = null;
-
-        // TODO : lock Id를 roomId 로만 해도 괜찮은지?
-        long lockId = request.roomId();
-
-        while (!redisLockRepository.lock(lockId)) {
-            Thread.sleep(100);
-        }
+    ) {
+        var lock = redissonClient.getLock(request.roomId().toString());
 
         try {
-            response = bookingService.createBooking(customUserDetails, request);
+            boolean avaliable = lock.tryLock(10, 1, TimeUnit.SECONDS);
+
+            if(!avaliable) {
+                // lock 획득 실패
+                throw new BookingException(BookingErrorCode.WAIT);
+            }
+
+            return bookingService.createBooking(customUserDetails, request);
+
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         } finally {
-            redisLockRepository.unlock(lockId);
+            lock.unlock();
         }
 
-        return response;
     }
-
-
-
 }
