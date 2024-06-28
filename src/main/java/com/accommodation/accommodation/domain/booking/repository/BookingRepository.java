@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    @Query(value = "SELECT COUNT(b) FROM Booking b WHERE b.room.id = :roomId " +
+    @Query(value = "SELECT COUNT(b) FROM booking b WHERE b.room.id = :roomId " +
             "AND (b.checkInDatetime < :checkOutDatetime AND b.checkOutDatetime > :checkInDatetime) FOR UPDATE",
             nativeQuery = true)
     long checkConflictingBookings(
