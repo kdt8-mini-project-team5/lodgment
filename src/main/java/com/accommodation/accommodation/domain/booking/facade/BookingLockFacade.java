@@ -25,7 +25,7 @@ public class BookingLockFacade {
         var lock = redissonClient.getLock(request.roomId().toString());
 
         try {
-            boolean avaliable = lock.tryLock(10, 1, TimeUnit.SECONDS);
+            boolean avaliable = lock.tryLock(1, 1, TimeUnit.SECONDS);
 
             if(!avaliable) {
                 // lock 획득 실패
@@ -35,7 +35,7 @@ public class BookingLockFacade {
             return bookingService.createBooking(customUserDetails, request);
 
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new BookingException(BookingErrorCode.CONFLICT_BOOKING);
         } finally {
             lock.unlock();
         }
