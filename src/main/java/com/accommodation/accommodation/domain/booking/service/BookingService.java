@@ -1,12 +1,10 @@
 package com.accommodation.accommodation.domain.booking.service;
 
-import com.accommodation.accommodation.domain.accommodation.repository.AccommodationRepository;
 import com.accommodation.accommodation.domain.auth.config.model.CustomUserDetails;
-import com.accommodation.accommodation.domain.auth.repository.UserRepository;
 import com.accommodation.accommodation.domain.booking.exception.BookingException;
 import com.accommodation.accommodation.domain.booking.exception.errorcode.BookingErrorCode;
+import com.accommodation.accommodation.domain.booking.facade.BookingLockFacade;
 import com.accommodation.accommodation.domain.booking.model.dto.BookingDTO;
-import com.accommodation.accommodation.domain.booking.model.entity.Booking;
 import com.accommodation.accommodation.domain.booking.model.request.CreateBookingRequest;
 import com.accommodation.accommodation.domain.booking.model.response.ConfirmBookingResponse;
 import com.accommodation.accommodation.domain.booking.model.response.ConfirmBookingResponse.BookingResponse;
@@ -31,7 +29,6 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final RoomRepository roomRepository;
 
-
     @Transactional
     public ResponseEntity createBooking(
         CustomUserDetails customUserDetails,
@@ -52,7 +49,6 @@ public class BookingService {
             roomDetails.getCheckOut());
 
 
-
         long conflictBookingCount = bookingRepository.checkConflictingBookings(
             request.roomId(),
             checkInDatetime,
@@ -66,7 +62,6 @@ public class BookingService {
         long totalPrice =
             ChronoUnit.DAYS.between(checkInDatetime.toLocalDate(), checkOutDatetime.toLocalDate())
                 * roomDetails.getPrice();
-
 
         var booking = BookingDTO.builder()
             .userId(customUserDetails.getUserId())

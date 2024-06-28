@@ -19,7 +19,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query(
             value = "SELECT COUNT(*) FROM booking WHERE room_id = :roomId " +
-                    "AND (check_in_datetime < :checkOutDatetime AND check_out_datetime > :checkInDatetime) FOR UPDATE",
+                    "AND (check_in_datetime < :checkOutDatetime AND check_out_datetime > :checkInDatetime)",
             nativeQuery = true
     )
     long checkConflictingBookings(

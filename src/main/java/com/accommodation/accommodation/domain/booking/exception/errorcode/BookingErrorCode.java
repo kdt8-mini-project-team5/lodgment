@@ -11,7 +11,8 @@ public enum BookingErrorCode implements ErrorCode {
 
     WRONG_ROOM_ID("객실 정보가 존재하지 않습니다.", HttpStatus.NOT_FOUND),
     WRONG_OPTIONS("잘못된 옵션이 선택되어 있습니다.", HttpStatus.BAD_REQUEST),
-    CONFLICT_BOOKING("예약이 불가능한 날자가 포함되어 있습니다.", HttpStatus.BAD_REQUEST)
+    CONFLICT_BOOKING("예약이 불가능한 날자가 포함되어 있습니다.", HttpStatus.BAD_REQUEST),
+    TIMEOUT("요청시간이 만료되었습니다.", HttpStatus.GATEWAY_TIMEOUT)
     ;
 
     private final String statusText;
