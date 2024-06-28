@@ -16,7 +16,6 @@ import com.accommodation.accommodation.domain.room.repository.RoomRepository;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Hibernate;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -86,7 +84,6 @@ public class AccommodationService {
     }
 
 
-
     @Transactional(readOnly = true)
     public AccommodationDetailResponse getAccommodationById(Long id, LocalDate checkInDate, LocalDate checkOutDate) {
         Accommodation accommodation = accommodationRepository.findAccommodationDetailById(id)
@@ -99,7 +96,7 @@ public class AccommodationService {
         List<Room> roomList = roomRepository.findRoomDetailByAccommodationId(
             accommodation.getId());
 
-        return AccommodationDetailResponse.builder()
+        AccommodationDetailResponse response = AccommodationDetailResponse.builder()
             .longitude(Double.parseDouble(accommodation.getLongitude()))
             .latitude(Double.parseDouble(accommodation.getLatitude()))
             .title(accommodation.getTitle())
@@ -131,43 +128,7 @@ public class AccommodationService {
                 .toList())
             .roomCount(roomList.size())
             .build();
+        return response;
     }
-
-/*    private AccommodationDetailResponse createAccommodationDetailResponse(Accommodation accommodation){
-        List<Room> roomList = roomRepository.findRoomDetailByAccommodationId(
-            accommodation.getId());
-        return AccommodationDetailResponse.builder()
-            .longitude(Double.parseDouble(accommodation.getLongitude()))
-            .latitude(Double.parseDouble(accommodation.getLatitude()))
-            .title(accommodation.getTitle())
-            .info(accommodation.getInfo())
-            .price(accommodation.getMinPrice())
-            .checkIn(accommodation.getCheckIn().toString())
-            .checkOut(accommodation.getCheckOut().toString())
-            .shower(accommodation.isShower())
-            .aircone(accommodation.isAircone())
-            .tv(accommodation.isTv())
-            .pc(accommodation.isPc())
-            .internet(accommodation.isInternet())
-            .refrigerator(accommodation.isRefrigerator())
-            .toiletries(accommodation.isToiletries())
-            .kitchenware(accommodation.isKitchenware())
-            .parkingLodging(accommodation.isParkingLodging())
-            .address(accommodation.getAddress())
-            .tel(accommodation.getTel())
-            .dryer(accommodation.isDryer())
-            .img(accommodation.getImages())
-            .room(roomList.stream()
-                .map(room -> RoomResponse.builder()
-                    .title(room.getTitle())
-                    .price(room.getPrice())
-                    .minPeople(room.getMinPeople())
-                    .maxPeople(room.getMaxPeople())
-                    .img(room.getImages())
-                    .build())
-                .toList())
-            .roomCount(roomList.size())
-            .build();
-    }*/
 
 }
