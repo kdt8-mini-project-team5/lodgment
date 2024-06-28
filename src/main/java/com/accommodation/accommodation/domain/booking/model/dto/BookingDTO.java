@@ -1,5 +1,6 @@
 package com.accommodation.accommodation.domain.booking.model.dto;
 
+import com.accommodation.accommodation.global.model.entity.BaseTimeStamp;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,7 +9,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class BookingDTO {
+public class BookingDTO extends BaseTimeStamp {
 
     private Long userId;
 

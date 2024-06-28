@@ -1,6 +1,7 @@
 package com.accommodation.accommodation.domain.booking.service;
 
 import com.accommodation.accommodation.domain.auth.config.model.CustomUserDetails;
+import com.accommodation.accommodation.domain.booking.facade.BookingLockFacade;
 import com.accommodation.accommodation.domain.booking.model.entity.Booking;
 import com.accommodation.accommodation.domain.booking.model.request.CreateBookingRequest;
 import com.accommodation.accommodation.domain.booking.repository.BookingRepository;
@@ -26,10 +27,13 @@ class BookingServiceTest {
     @Autowired
     private BookingRepository bookingRepository;
 
-    @AfterEach
-    public void after() {
-        bookingRepository.deleteAll();
-    }
+    @Autowired
+    BookingLockFacade bookingLockFacade;
+
+//    @AfterEach
+//    public void after() {
+//        bookingRepository.deleteAll();
+//    }
 
     @Test
     public void 동시에_100개의_요청() throws InterruptedException {
@@ -37,11 +41,14 @@ class BookingServiceTest {
 
         String email = "test1@test.com";
         CustomUserDetails customUserDetails = new CustomUserDetails(null, email, null);
+
+        long roomId = 1L;
+        int numPeople = 2;
+        LocalDate checkInDate = LocalDate.of(2024, 07, 28);
+        LocalDate checkOutDate = LocalDate.of(2024, 07, 29);
+
         CreateBookingRequest request = new CreateBookingRequest(
-                1L,
-                2,
-                LocalDate.of(2024, 07, 28),
-                LocalDate.of(2024, 07, 29)
+            roomId, numPeople, checkInDate, checkOutDate
         );
 
         var executorService = Executors.newFixedThreadPool(32);
@@ -50,7 +57,10 @@ class BookingServiceTest {
         for (int i = 0; i < threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    bookingService.createBooking(customUserDetails, request);
+                    // bookingService.createBooking(customUserDetails, request);
+                    bookingLockFacade.createBooking(customUserDetails, request);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 } finally {
                     latch.countDown();
                 }
