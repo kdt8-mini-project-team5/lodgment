@@ -13,6 +13,8 @@ import com.accommodation.accommodation.domain.accommodation.repository.Accommoda
 import com.accommodation.accommodation.domain.room.model.entity.Room;
 import com.accommodation.accommodation.domain.room.model.response.RoomResponse;
 import com.accommodation.accommodation.domain.room.repository.RoomRepository;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
@@ -42,11 +44,11 @@ public class AccommodationService {
             accommodationPage = accommodationRepository.findByCategoryWithCursor(category, cursorId, pageable, cursorMinPrice);
         }
         // 숙소데이터 가져와서 응답용으로 변환
-        List<AccommodationSimpleResponse> responseList= accommodationPage.stream()
-            .map(this::createAccommodationResponse)
-            .toList();
+        List<AccommodationSimpleResponse> responseList = accommodationPage.stream()
+                .map(this::createAccommodationResponse)
+                .toList();
 
-        if (responseList.isEmpty()){
+        if (responseList.isEmpty()) {
             throw new AccommodationException(AccommodationErrorCode.NOT_FOUND);
         }
 
@@ -55,8 +57,8 @@ public class AccommodationService {
                 .map(AccommodationSimpleResponse::getId).toList();
         List<List<String>> accommodationImagesByIds = accommodationRepository.findAccommodationImagesByIds(idList);
 
-        for(int i = 0; i< responseList.size(); i++){
-            responseList.get(i).setThumbnailUrl(accommodationImagesByIds.get(accommodationImagesByIds.size() - 1 - (i*2)).get(0));
+        for (int i = 0; i < responseList.size(); i++) {
+            responseList.get(i).setThumbnailUrl(accommodationImagesByIds.get(accommodationImagesByIds.size() - 1 - (i * 2)).get(0));
         }
 
         boolean nextData = true;
@@ -65,25 +67,24 @@ public class AccommodationService {
         }
 
 
-
         return AccommodationsResponse.builder()
-            .accommodationSimpleResponseList(responseList)
-            .nextData(nextData)
-            .nextCursorId(responseList.get(responseList.size() - 1).getId())
-            .nextCursorMinPrice(responseList.get(responseList.size() - 1).getMinPrice())
-            .build();
+                .accommodationSimpleResponseList(responseList)
+                .nextData(nextData)
+                .nextCursorId(responseList.get(responseList.size() - 1).getId())
+                .nextCursorMinPrice(responseList.get(responseList.size() - 1).getMinPrice())
+                .build();
     }
 
     private AccommodationSimpleResponse createAccommodationResponse(AccommodationSimpleDTO accommodationSimpleDTO) {
         return AccommodationSimpleResponse.builder()
-            .id(accommodationSimpleDTO.getId())
-            .title(accommodationSimpleDTO.getTitle())
-            .minPrice(accommodationSimpleDTO.getMinPrice())
-            .region(accommodationSimpleDTO.getRegion())
-            .build();
+                .id(accommodationSimpleDTO.getId())
+                .title(accommodationSimpleDTO.getTitle())
+                .minPrice(accommodationSimpleDTO.getMinPrice())
+                .region(accommodationSimpleDTO.getRegion())
+                .build();
     }
 
-
+    @Cacheable(cacheNames = "accommodationDetails", key = "#id", unless = "#result == null")
     @Transactional(readOnly = true)
     public AccommodationDetailResponse getAccommodationById(Long id, LocalDate checkInDate, LocalDate checkOutDate) {
         Accommodation accommodation = accommodationRepository.findAccommodationDetailById(id)
@@ -94,40 +95,44 @@ public class AccommodationService {
         }
 
         List<Room> roomList = roomRepository.findRoomDetailByAccommodationId(
-            accommodation.getId());
+                accommodation.getId());
 
         AccommodationDetailResponse response = AccommodationDetailResponse.builder()
-            .longitude(Double.parseDouble(accommodation.getLongitude()))
-            .latitude(Double.parseDouble(accommodation.getLatitude()))
-            .title(accommodation.getTitle())
-            .info(accommodation.getInfo())
-            .price(accommodation.getMinPrice())
-            .checkIn(accommodation.getCheckIn().toString())
-            .checkOut(accommodation.getCheckOut().toString())
-            .shower(accommodation.isShower())
-            .aircone(accommodation.isAircone())
-            .tv(accommodation.isTv())
-            .pc(accommodation.isPc())
-            .internet(accommodation.isInternet())
-            .refrigerator(accommodation.isRefrigerator())
-            .toiletries(accommodation.isToiletries())
-            .kitchenware(accommodation.isKitchenware())
-            .parkingLodging(accommodation.isParkingLodging())
-            .address(accommodation.getAddress())
-            .tel(accommodation.getTel())
-            .dryer(accommodation.isDryer())
-            .img(accommodation.getImages())
-            .room(roomList.stream()
-                .map(room -> RoomResponse.builder()
-                    .title(room.getTitle())
-                    .price(room.getPrice())
-                    .minPeople(room.getMinPeople())
-                    .maxPeople(room.getMaxPeople())
-                    .img(room.getImages())
-                    .build())
-                .toList())
-            .roomCount(roomList.size())
-            .build();
+                .longitude(Double.parseDouble(accommodation.getLongitude()))
+                .latitude(Double.parseDouble(accommodation.getLatitude()))
+                .title(accommodation.getTitle())
+                .info(accommodation.getInfo())
+                .price(accommodation.getMinPrice())
+                .checkIn(accommodation.getCheckIn().toString())
+                .checkOut(accommodation.getCheckOut().toString())
+                .shower(accommodation.isShower())
+                .aircone(accommodation.isAircone())
+                .tv(accommodation.isTv())
+                .pc(accommodation.isPc())
+                .internet(accommodation.isInternet())
+                .refrigerator(accommodation.isRefrigerator())
+                .toiletries(accommodation.isToiletries())
+                .kitchenware(accommodation.isKitchenware())
+                .parkingLodging(accommodation.isParkingLodging())
+                .address(accommodation.getAddress())
+                .tel(accommodation.getTel())
+                .dryer(accommodation.isDryer())
+                .img(new ArrayList<>(accommodation.getImages()))    // 숙소 이미지 리스트 초기화
+                .room(roomList.stream()
+                        .map(room -> {
+                            List<String> initializedRoomImages = new ArrayList<>(room.getImages()); // 방 이미지 리스트 초기화
+                            return RoomResponse.builder()
+                                    .title(room.getTitle())
+                                    .price(room.getPrice())
+                                    .minPeople(room.getMinPeople())
+                                    .maxPeople(room.getMaxPeople())
+                                    .img(initializedRoomImages)
+                                    .build();
+                        })
+                        .toList())
+                .roomCount(roomList.size())
+                .build();
+
         return response;
     }
 
