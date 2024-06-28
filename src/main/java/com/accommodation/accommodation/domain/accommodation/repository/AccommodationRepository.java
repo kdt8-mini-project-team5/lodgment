@@ -2,9 +2,7 @@ package com.accommodation.accommodation.domain.accommodation.repository;
 
 import com.accommodation.accommodation.domain.accommodation.model.entity.Accommodation;
 import com.accommodation.accommodation.domain.accommodation.model.response.AccommodationSimpleDTO;
-import com.accommodation.accommodation.domain.accommodation.model.response.AccommodationSimpleResponse;
 import com.accommodation.accommodation.domain.accommodation.model.type.Category;
-import io.lettuce.core.dynamic.annotation.Param;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +24,7 @@ public interface AccommodationRepository extends JpaRepository<Accommodation, Lo
     @Query("SELECT a.images FROM Accommodation a WHERE a.id in :ids")
     List<List<String>> findAccommodationImagesByIds(List<Long> ids);
 
-    @Query("SELECT a FROM Accommodation a JOIN FETCH a.roomList where a.id = :id")
+    @Query("SELECT a FROM Accommodation a JOIN FETCH a.images where a.id = :id")
     Optional<Accommodation> findAccommodationDetailById(Long id);
 
 }

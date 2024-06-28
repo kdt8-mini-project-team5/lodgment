@@ -1,11 +1,16 @@
 package com.accommodation.accommodation.domain.accommodation.model.response;
 
+import com.accommodation.accommodation.domain.room.model.response.RoomResponse;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class AccommodationDetailResponse {
     private double longitude;
@@ -31,13 +36,4 @@ public class AccommodationDetailResponse {
     private List<String> img;
     private List<RoomResponse> room;
 
-    @Data
-    @Builder
-    public static class RoomResponse {
-        private String title;
-        private long price;
-        private int minPeople;
-        private int maxPeople;
-        private List<String> img;
-    }
 }
