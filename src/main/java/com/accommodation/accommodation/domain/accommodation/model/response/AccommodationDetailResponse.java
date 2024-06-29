@@ -34,6 +34,7 @@ public class AccommodationDetailResponse {
     @Data
     @Builder
     public static class RoomResponse {
+        private Long roomId;
         private String title;
         private long price;
         private int minPeople;
