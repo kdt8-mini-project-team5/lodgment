@@ -2,6 +2,7 @@ package com.accommodation.accommodation.domain.cart.controller;
 
 import com.accommodation.accommodation.domain.auth.config.model.CustomUserDetails;
 import com.accommodation.accommodation.domain.cart.model.request.CartRequest;
+import com.accommodation.accommodation.domain.cart.model.response.CartCountResponse;
 import com.accommodation.accommodation.domain.cart.model.response.CartListResponse;
 import com.accommodation.accommodation.domain.cart.service.CartService;
 import jakarta.validation.Valid;
@@ -55,11 +56,11 @@ public class CartController {
     }
 
     @GetMapping("/count")
-    public ResponseEntity deleteCartByCartIdList(
+    public ResponseEntity getCartCount(
         @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){
-
-        return ResponseEntity.ok().build();
+        CartCountResponse cartCountResponse = cartService.getCartCount(customUserDetails);
+        return ResponseEntity.ok(cartCountResponse);
 
     }
 }

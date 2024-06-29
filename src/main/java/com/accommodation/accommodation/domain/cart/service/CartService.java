@@ -6,6 +6,7 @@ import com.accommodation.accommodation.domain.booking.exception.BookingException
 import com.accommodation.accommodation.domain.booking.exception.errorcode.BookingErrorCode;
 import com.accommodation.accommodation.domain.cart.model.entity.Cart;
 import com.accommodation.accommodation.domain.cart.model.request.CartRequest;
+import com.accommodation.accommodation.domain.cart.model.response.CartCountResponse;
 import com.accommodation.accommodation.domain.cart.model.response.CartListResponse;
 import com.accommodation.accommodation.domain.cart.model.response.CartListResponse.CartResponse;
 import com.accommodation.accommodation.domain.cart.repository.CartRepository;
@@ -122,5 +123,10 @@ public class CartService {
             )
             .totalPage(cartPage.getTotalPages())
             .build();
+    }
+
+
+    public CartCountResponse getCartCount(CustomUserDetails customUserDetails) {
+        return CartCountResponse.builder().cartCount(cartRepository.countByUserId(customUserDetails.getUserId())).build();
     }
 }
