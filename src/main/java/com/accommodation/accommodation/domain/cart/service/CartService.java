@@ -129,4 +129,8 @@ public class CartService {
     public CartCountResponse getCartCount(CustomUserDetails customUserDetails) {
         return CartCountResponse.builder().cartCount(cartRepository.countByUserId(customUserDetails.getUserId())).build();
     }
+
+    public void deleteCartByCartIdList(List<Long> cartIdList) {
+        cartRepository.deleteAllByIds(cartIdList);
+    }
 }

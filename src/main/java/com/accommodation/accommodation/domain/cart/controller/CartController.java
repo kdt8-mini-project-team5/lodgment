@@ -1,6 +1,8 @@
 package com.accommodation.accommodation.domain.cart.controller;
 
 import com.accommodation.accommodation.domain.auth.config.model.CustomUserDetails;
+import com.accommodation.accommodation.domain.cart.model.request.CartDeleteRequest;
+import com.accommodation.accommodation.domain.cart.model.request.CartListRequest;
 import com.accommodation.accommodation.domain.cart.model.request.CartRequest;
 import com.accommodation.accommodation.domain.cart.model.response.CartCountResponse;
 import com.accommodation.accommodation.domain.cart.model.response.CartListResponse;
@@ -38,19 +40,19 @@ public class CartController {
     // 페이지 네이션    반환 + totalPage, 몇번째 페이지인지  sort -> 체크인 날짜가 빠른 순
     @GetMapping("")
     public ResponseEntity findCartListByUserId(
-        @RequestParam int page,
-        @RequestParam int size,
+        @ModelAttribute @Valid CartListRequest cartListRequest,
         @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){
-        CartListResponse response = cartService.findCartListByUserId(customUserDetails, PageRequest.of(page, size));
+
+        CartListResponse response = cartService.findCartListByUserId(customUserDetails, PageRequest.of(cartListRequest.page()-1, cartListRequest.size()));
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("")
     public ResponseEntity deleteCartByCartIdList(
-        @RequestParam List<Long> cartIdList
+        @ModelAttribute @Valid CartDeleteRequest cartDeleteRequest
     ){
-
+        cartService.deleteCartByCartIdList(cartDeleteRequest.cartList());
         return ResponseEntity.ok().build();
 
     }
