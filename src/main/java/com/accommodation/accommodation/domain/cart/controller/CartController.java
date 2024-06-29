@@ -50,9 +50,10 @@ public class CartController {
 
     @DeleteMapping("")
     public ResponseEntity deleteCartByCartIdList(
-        @ModelAttribute @Valid CartDeleteRequest cartDeleteRequest
+        @ModelAttribute @Valid CartDeleteRequest cartDeleteRequest,
+        @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){
-        cartService.deleteCartByCartIdList(cartDeleteRequest.cartList());
+        cartService.deleteCartByCartIdList(cartDeleteRequest.cartList(),customUserDetails);
         return ResponseEntity.ok().build();
 
     }

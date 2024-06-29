@@ -1,6 +1,7 @@
 package com.accommodation.accommodation.domain.cart.repository;
 
 import com.accommodation.accommodation.domain.cart.model.entity.Cart;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,8 @@ public interface CartRepository extends JpaRepository<Cart,Long> {
     Integer countByUserId(Long userId);
 
     @Modifying
-    @Query("DELETE FROM Cart c where c.id in :ids")
-    void deleteAllByIds(List<Long> ids);
+    @Query("DELETE FROM Cart c where c.id in :ids and c.user.id = :userId")
+    int deleteAllByIds(List<Long> ids, Long userId);
+
+    Boolean existsByRoomIdAndUserIdAndCheckInDateTimeAndCheckOutDateTime(Long roomId,Long userId, LocalDateTime checkInDateTime, LocalDateTime checkOutDateTime);
 }

@@ -4,6 +4,8 @@ import com.accommodation.accommodation.domain.auth.config.model.CustomUserDetail
 import com.accommodation.accommodation.domain.auth.model.entity.User;
 import com.accommodation.accommodation.domain.booking.exception.BookingException;
 import com.accommodation.accommodation.domain.booking.exception.errorcode.BookingErrorCode;
+import com.accommodation.accommodation.domain.cart.exception.CartException;
+import com.accommodation.accommodation.domain.cart.exception.errorcode.CartErrorCode;
 import com.accommodation.accommodation.domain.cart.model.entity.Cart;
 import com.accommodation.accommodation.domain.cart.model.request.CartRequest;
 import com.accommodation.accommodation.domain.cart.model.response.CartCountResponse;
@@ -17,7 +19,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,8 +34,6 @@ public class CartService {
 
     public void createCart(CartRequest cartRequest, Long userId) {
         // room 이 올바른지 확인 후 price 가져오기
-        System.out.println(cartRequest.roomId());
-        System.out.println(userId);
         Room room = roomRepository.findRoomAndAccommodationById(cartRequest.roomId())
             .orElseThrow(() -> new BookingException(BookingErrorCode.WRONG_ROOM_ID));
 
@@ -42,10 +41,12 @@ public class CartService {
             room.getAccommodation().getCheckIn());
         LocalDateTime checkOutDatetime = LocalDateTime.of(cartRequest.checkOutDate(),
             room.getAccommodation().getCheckOut());
-
         Long totalPrice =
             ChronoUnit.DAYS.between(checkInDatetime.toLocalDate(), checkOutDatetime.toLocalDate())
                 * room.getPrice();
+        // 같은 요청의 장바구니가 이미 있는지 확인
+        checkEqualsCartInDB(cartRequest.roomId(),userId,checkInDatetime,checkOutDatetime);
+
         // 체크인 체크아웃 exception -> 하게되면 valid로 처리
 
         // 예약 가능한 방인지 체크  -> 할지말지 정해야함
@@ -63,6 +64,12 @@ public class CartService {
             .build();
 
         cartRepository.save(cart);
+    }
+
+    private void checkEqualsCartInDB(Long roomId, Long userId, LocalDateTime checkInDatetime, LocalDateTime checkOutDatetime){
+        if (cartRepository.existsByRoomIdAndUserIdAndCheckInDateTimeAndCheckOutDateTime(roomId,userId,checkInDatetime,checkOutDatetime)){
+            throw new CartException(CartErrorCode.EQUALS_CART_IN_DB);
+        }
     }
 
 
@@ -130,7 +137,12 @@ public class CartService {
         return CartCountResponse.builder().cartCount(cartRepository.countByUserId(customUserDetails.getUserId())).build();
     }
 
-    public void deleteCartByCartIdList(List<Long> cartIdList) {
-        cartRepository.deleteAllByIds(cartIdList);
+    public void deleteCartByCartIdList(List<Long> cartIdList, CustomUserDetails customUserDetails) {
+
+        int deleteCount = cartRepository.deleteAllByIds(cartIdList, customUserDetails.getUserId());
+
+        if (deleteCount == 0) {
+            throw new CartException(CartErrorCode.FAIL_DELETE);
+        }
     }
 }
