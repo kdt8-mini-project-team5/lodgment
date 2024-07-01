@@ -47,10 +47,6 @@ public class CartService {
         // 같은 요청의 장바구니가 이미 있는지 확인
         checkEqualsCartInDB(cartRequest.roomId(),userId,checkInDatetime,checkOutDatetime);
 
-        // 체크인 체크아웃 exception -> 하게되면 valid로 처리
-
-        // 예약 가능한 방인지 체크  -> 할지말지 정해야함
-
         // 장바구니에 저장
         Cart cart = Cart.builder()
             .user(User.builder().id(userId).build())
@@ -59,8 +55,8 @@ public class CartService {
             .people(cartRequest.people())
             .checkInDateTime(checkInDatetime)
             .checkOutDateTime(checkOutDatetime)
-/*            .accommodationId(room.getAccommodation().getId())
-            .accommodationTitle(room.getAccommodation().getTitle())*/
+            .accommodationId(room.getAccommodation().getId())
+            .accommodationTitle(room.getAccommodation().getTitle())
             .build();
 
         cartRepository.save(cart);
@@ -75,36 +71,6 @@ public class CartService {
 
     public CartListResponse findCartListByUserId(CustomUserDetails customUserDetails,
         Pageable pageable) {
-
-/*
-        cart 정보
-        1. cartId
-        2. checkInDatetime
-        3. checkOutDatetime
-        4. totalPrice
-        5. people
-
-        room 정보
-        1. roomId
-        2. roomTitle
-        3. minPeople
-        4. maxPeople
-        5. roomImg 썸네일
-
-        accommodation 정보
-        1. accommodationId
-        2. accommodationTitle
-
-                */
-        /* 현재 쿼리
-        1. 유저 검증쿼리 필수
-        2. 장바구니 조회 필수
-        3. room 조회 배치로 한번에   -> 페치 조인 불가    페이징+페치 조인 불가
-        4. room img 조회 배치로 한번에
-        5. accommodation 배치 처리  --> 이거를 테이블에 담아 두면 편하게 조회할수 있지 않을까? 일단 적용
-
-        * */
-
         //cart 정보 가져오기
         Page<Cart> cartPage = cartRepository.findByUserId(customUserDetails.getUserId(), pageable);
 
@@ -121,10 +87,8 @@ public class CartService {
                     .minPeople(cart.getRoom().getMinPeople())
                     .maxPeople(cart.getRoom().getMaxPeople())
                     .roomImg(cart.getRoom().getImages().get(1))
-                    .accommodationId(cart.getRoom().getAccommodation().getId())
-                    .accommodationTitle(cart.getRoom().getAccommodation().getTitle())
-/*                    .accommodationId(cart.getAccommodationId())
-                    .accommodationTitle(cart.getAccommodationTitle())*/
+                    .accommodationId(cart.getAccommodationId())
+                    .accommodationTitle(cart.getAccommodationTitle())
                     .build())
                 .toList()
             )
