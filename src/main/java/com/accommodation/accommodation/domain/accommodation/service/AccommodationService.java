@@ -84,7 +84,7 @@ public class AccommodationService {
                 .build();
     }
 
-//    @Cacheable(cacheNames = "accommodationDetails", key = "#id", unless = "#result == null")
+    @Cacheable(cacheNames = "accommodationDetails", key = "#id", unless = "#result == null")
     @Transactional(readOnly = true)
     public AccommodationDetailResponse getAccommodationById(Long id, LocalDate checkInDate, LocalDate checkOutDate) {
         Accommodation accommodation = accommodationRepository.findAccommodationDetailById(id)
