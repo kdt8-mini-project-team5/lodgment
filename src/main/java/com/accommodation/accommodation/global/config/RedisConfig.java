@@ -1,6 +1,8 @@
 package com.accommodation.accommodation.global.config;
 
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
@@ -53,12 +55,18 @@ public class RedisConfig {
         RedisCacheConfiguration cacheConfig = RedisCacheConfiguration.defaultCacheConfig()
             .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
             .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
-            .entryTtl(Duration.ofMinutes(10L));
+            .entryTtl(Duration.ofSeconds(1L)); // TTL을 5초로 설정
+
+        // 캐시별로 개별 설정을 적용합니다.
+        Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
+        cacheConfigurations.put("accommodationDetails", cacheConfig.entryTtl(Duration.ofMinutes(1L)));
+        cacheConfigurations.put("accommodationList", cacheConfig.entryTtl(Duration.ofSeconds(10L))); // TTL을 5초로 설정
 
         return RedisCacheManager
             .RedisCacheManagerBuilder
             .fromConnectionFactory(factory)
             .cacheDefaults(cacheConfig)
+            .withInitialCacheConfigurations(cacheConfigurations)
             .build();
     }
 
