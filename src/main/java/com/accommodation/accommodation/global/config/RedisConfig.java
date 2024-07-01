@@ -55,11 +55,11 @@ public class RedisConfig {
         RedisCacheConfiguration cacheConfig = RedisCacheConfiguration.defaultCacheConfig()
             .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
             .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
-            .entryTtl(Duration.ofSeconds(1L)); // TTL을 5초로 설정
+            .entryTtl(Duration.ofMinutes(1L));
 
         // 캐시별로 개별 설정을 적용합니다.
         Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
-//        cacheConfigurations.put("accommodationDetails", cacheConfig.entryTtl(Duration.ofMinutes(1L)));
+        cacheConfigurations.put("accommodationDetails", cacheConfig.entryTtl(Duration.ofMinutes(1L)));
         cacheConfigurations.put("accommodationList", cacheConfig.entryTtl(Duration.ofSeconds(10L))); // TTL을 5초로 설정
 
         return RedisCacheManager
