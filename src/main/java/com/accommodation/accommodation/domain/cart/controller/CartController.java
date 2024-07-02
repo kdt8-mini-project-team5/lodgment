@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,7 +31,7 @@ public class CartController {
 
     @PostMapping("")
     public ResponseEntity createCart(
-        @ModelAttribute @Valid CartRequest cartRequest,
+        @RequestBody @Valid CartRequest cartRequest,
         @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){
         cartService.createCart(cartRequest, customUserDetails.getUserId());
