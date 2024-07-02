@@ -47,6 +47,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(matcher -> matcher
                         .requestMatchers("/api/register/**", "/login").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/api/accommodation/**").permitAll()
+                        .requestMatchers("/api/accommodation").permitAll()
                         .anyRequest().authenticated());
 
         http.addFilterBefore(loginFilter(), UsernamePasswordAuthenticationFilter.class);
@@ -71,12 +73,13 @@ public class SecurityConfig {
         filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
         return filter;
     }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://localhost:8080"));
+        config.setAllowedOrigins(List.of("https://fe-mini-project-ten.vercel.app"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("*"));
