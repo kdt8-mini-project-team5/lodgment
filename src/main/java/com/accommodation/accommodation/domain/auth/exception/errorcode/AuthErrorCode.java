@@ -12,7 +12,10 @@ public enum AuthErrorCode implements ErrorCode {
     ERROR_SEND_EMAIL("이메일 전송에 실패 했습니다.", HttpStatus.BAD_REQUEST),
     LOGIN_FAILED("로그인에 실패하였습니다.", HttpStatus.BAD_REQUEST),
     EMAIL_SAME("이메일 중복입니다.", HttpStatus.BAD_REQUEST),
-    EMAIL_NOT_STRING("이메일 형식에 맞지 않습니다.", HttpStatus.BAD_REQUEST);
+    EMAIL_NOT_STRING("이메일 형식에 맞지 않습니다.", HttpStatus.BAD_REQUEST),
+
+    INVALID_JWT_TOKEN("잘못된 JWT 토큰입니다.",HttpStatus.UNAUTHORIZED),
+    ;
 
     private final String statusText;
     private final HttpStatus statusCode;
