@@ -122,6 +122,7 @@ public class AccommodationService {
                         .map(room -> {
                             List<String> initializedRoomImages = new ArrayList<>(room.getImages()); // 방 이미지 리스트 초기화
                             return RoomResponse.builder()
+                                    .roomId(room.getId())
                                     .title(room.getTitle())
                                     .price(room.getPrice())
                                     .minPeople(room.getMinPeople())
