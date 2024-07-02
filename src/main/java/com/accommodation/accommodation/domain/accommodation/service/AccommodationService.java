@@ -113,6 +113,7 @@ public class AccommodationService {
                 .img(accommodation.getImages())
                 .room(accommodation.getRoomList().stream()
                         .map(room -> RoomResponse.builder()
+                                .roomId(room.getId())
                                 .title(room.getTitle())
                                 .price(room.getPrice())
                                 .minPeople(room.getMinPeople())

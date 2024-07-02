@@ -1,10 +1,10 @@
 package com.accommodation.accommodation.domain.booking.service;
 
 import com.accommodation.accommodation.domain.auth.config.model.CustomUserDetails;
-import com.accommodation.accommodation.domain.auth.repository.UserRepository;
 import com.accommodation.accommodation.domain.booking.exception.BookingException;
 import com.accommodation.accommodation.domain.booking.exception.errorcode.BookingErrorCode;
-import com.accommodation.accommodation.domain.booking.model.entity.Booking;
+import com.accommodation.accommodation.domain.booking.facade.BookingLockFacade;
+import com.accommodation.accommodation.domain.booking.model.dto.BookingDTO;
 import com.accommodation.accommodation.domain.booking.model.request.CreateBookingRequest;
 import com.accommodation.accommodation.domain.booking.model.response.ConfirmBookingResponse;
 import com.accommodation.accommodation.domain.booking.model.response.ConfirmBookingResponse.BookingResponse;
@@ -29,66 +29,63 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final RoomRepository roomRepository;
 
-    // temporary for test
-    private final UserRepository userRepository;
-
     @Transactional
     public ResponseEntity createBooking(
         CustomUserDetails customUserDetails,
         CreateBookingRequest request
         ) {
-
-        var roomEntity = roomRepository.findById(request.roomId())
+        var roomDetails = roomRepository.findRoomDetailsById(request.roomId())
             .orElseThrow(() -> new BookingException(BookingErrorCode.WRONG_ROOM_ID));
 
-        int roomMaxPeople = roomEntity.getMaxPeople();
-        int roomMinPeople = roomEntity.getMinPeople();
-        if(roomMinPeople > request.numPeople() || roomMaxPeople < request.numPeople()) {
-            System.out.println("room : " + request.numPeople() + " min : " + roomMinPeople + " max : " + roomMaxPeople);
+        int roomMaxPeople = roomDetails.getMaxPeople();
+        int roomMinPeople = roomDetails.getMinPeople();
+        if (roomMinPeople > request.numPeople() || roomMaxPeople < request.numPeople()) {
             throw new BookingException(BookingErrorCode.WRONG_OPTIONS);
         }
 
-        LocalDateTime checkInDatetime = LocalDateTime.of(request.checkInDate(),roomEntity.getAccommodation().getCheckIn());
-        LocalDateTime checkOutDatetime = LocalDateTime.of(request.checkOutDate(),roomEntity.getAccommodation().getCheckOut());
+        LocalDateTime checkInDatetime = LocalDateTime.of(request.checkInDate(),
+            roomDetails.getCheckIn());
+        LocalDateTime checkOutDatetime = LocalDateTime.of(request.checkOutDate(),
+            roomDetails.getCheckOut());
 
-        var conflictBookings = bookingRepository.checkConflictingBookings(
-            roomEntity.getId(),
+
+        long conflictBookingCount = bookingRepository.checkConflictingBookings(
+            request.roomId(),
             checkInDatetime,
             checkOutDatetime
         );
 
-        if(!conflictBookings.isEmpty()) {
+        if (conflictBookingCount > 0) {
             throw new BookingException(BookingErrorCode.CONFLICT_BOOKING);
         }
 
-        long totalPrice = ChronoUnit.DAYS.between(checkInDatetime.toLocalDate(), checkOutDatetime.toLocalDate()) * roomEntity.getPrice();
+        long totalPrice =
+            ChronoUnit.DAYS.between(checkInDatetime.toLocalDate(), checkOutDatetime.toLocalDate())
+                * roomDetails.getPrice();
 
-        var currentUser = userRepository.findById(customUserDetails.getUserId())
-            .orElseThrow(() -> new BookingException(BookingErrorCode.WRONG_OPTIONS));
-
-        var bookingEntity = Booking.builder()
-            .user(currentUser)
+        var booking = BookingDTO.builder()
+            .userId(customUserDetails.getUserId())
             .orderId(UUID.randomUUID().toString())
-            .room(roomEntity)
+            .roomId(request.roomId())
             .checkInDatetime(checkInDatetime)
             .checkOutDatetime(checkOutDatetime)
             .people(request.numPeople())
             .totalPrice(totalPrice)
             .build();
 
-        bookingEntity = bookingRepository.save(bookingEntity);
+        var bookingResult = bookingRepository.saveBooking(booking);
+        // TODO : DB에서 발생한 예약 실패에 대한 예외 작업
 
 
         // TODO : to send a email of booking confirmation
 
         var response = CreateBookingResponse.builder()
-            .orderId(bookingEntity.getOrderId())
-            .roomTitle(roomEntity.getTitle())
+            .orderId(booking.getOrderId())
+            .roomTitle(roomDetails.getTitle())
             .checkInDate(request.checkInDate())
             .checkOutDate(request.checkOutDate())
             .totalPrice(totalPrice)
-            .build()
-            ;
+            .build();
 
         return ResponseEntity.ok().body(response);
     }
@@ -101,11 +98,8 @@ public class BookingService {
         int size
     ) {
 
-        var currentUser = userRepository.findById(customUserDetails.getUserId())
-            .orElseThrow(() -> new BookingException(BookingErrorCode.WRONG_OPTIONS));
-
         Pageable pageable = PageRequest.of(page, size);
-        var bookingList = bookingRepository.findAllByUserId(currentUser.getId(), pageable);
+        var bookingList = bookingRepository.findAllByUserId(customUserDetails.getUserId(), pageable);
 
         var bookingResponse = ConfirmBookingResponse.builder()
             .bookingList(bookingList.stream()

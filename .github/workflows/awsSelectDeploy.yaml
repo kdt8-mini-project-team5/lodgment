@@ -3,7 +3,7 @@ name: Accommodation AWS CI/CD
 on:
   push:
     branches:
-      - aws
+      - awsSelect
 
 jobs:
   build-and-push:
@@ -19,7 +19,7 @@ jobs:
 
       - uses: actions/checkout@v3
       - run: touch ./src/main/resources/application.yaml
-      - run: echo ${{ secrets.APPLICATION }} > ./src/main/resources/application.yaml
+      - run: echo ${{ secrets.APPLICATION2 }} > ./src/main/resources/application.yaml
       - run: cat ./src/main/resources/application.yaml
 
       - name: Grant execute permission to gradlew
@@ -40,11 +40,11 @@ jobs:
           docker build -t ghcr.io/$GITHUB_REPOSITORY/$IMAGE_NAME:$IMAGE_TAG .
           docker push ghcr.io/$GITHUB_REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
 
-      - name: Execute Server1 Init Script
+      - name: Execute Server2 Init Script
         uses: appleboy/ssh-action@master
         with:
           username: ubuntu
-          host: ${{ secrets.AWS_HOST }}
+          host: ${{ secrets.AWS_HOST1 }}
           key: ${{ secrets.AWS_PASSWORD }}
           script_stop: true
           script: chmod +x /home/student/docker_script.sh && sh /home/student/docker_script.sh

@@ -1,6 +1,9 @@
 package com.accommodation.accommodation.domain.booking.controller;
 
 import com.accommodation.accommodation.domain.auth.config.model.CustomUserDetails;
+import com.accommodation.accommodation.domain.booking.exception.BookingException;
+import com.accommodation.accommodation.domain.booking.exception.errorcode.BookingErrorCode;
+import com.accommodation.accommodation.domain.booking.facade.BookingLockFacade;
 import com.accommodation.accommodation.domain.booking.model.request.CreateBookingRequest;
 import com.accommodation.accommodation.domain.booking.service.BookingService;
 import jakarta.validation.Valid;
@@ -20,13 +23,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class BookingController {
 
     private final BookingService bookingService;
+    private final BookingLockFacade bookingLockFacade;
 
     @PostMapping
     public ResponseEntity createBooking(
         @Valid @RequestBody CreateBookingRequest createBookingRequest,
         @AuthenticationPrincipal CustomUserDetails customUserDetails
-    ) {
-        return bookingService.createBooking(customUserDetails, createBookingRequest);
+    ) throws InterruptedException {
+//        return bookingService.createBooking(customUserDetails, createBookingRequest);
+        return bookingLockFacade.createBooking(customUserDetails, createBookingRequest);
+
     }
 
     @GetMapping
