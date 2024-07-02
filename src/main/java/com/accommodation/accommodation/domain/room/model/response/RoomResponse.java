@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class RoomResponse {
+    private Long roomId;
     private String title;
     private long price;
     private int minPeople;
