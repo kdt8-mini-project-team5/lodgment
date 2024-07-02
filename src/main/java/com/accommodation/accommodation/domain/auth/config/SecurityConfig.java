@@ -35,6 +35,7 @@ public class SecurityConfig {
     private final JwtProvider jwtProvider;
     private final CookieUtil cookieUtil;
     private final UserDetailsServiceImpl userDetailsService;
+    private final AuthenticationConfiguration authenticationConfiguration;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
@@ -50,11 +51,12 @@ public class SecurityConfig {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         http
-            .authorizeHttpRequests(matcher -> matcher
-                .requestMatchers("/api/register/**", "/api/login").permitAll()
-                .requestMatchers("/api/accommodation/**").permitAll()
-                .requestMatchers("/actuator/**").permitAll()
-                .anyRequest().authenticated());
+                .authorizeHttpRequests(matcher -> matcher
+                    .requestMatchers("/api/register/**", "/api/login", "/api/check").permitAll()
+                    .requestMatchers("/api/accommodation/**").permitAll()
+                    .requestMatchers("/api/accommodation").permitAll()
+                    .requestMatchers("/actuator/**").permitAll()
+                    .anyRequest().authenticated());
 
         http.addFilterBefore(loginFilter(authenticationManager),
             UsernamePasswordAuthenticationFilter.class);
@@ -83,13 +85,12 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("https://fe-mini-project-ten.vercel.app", "http://localhost:8080"));
+        config.setAllowedOrigins(List.of("https://fe-mini-project-ten.vercel.app"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("*"));
