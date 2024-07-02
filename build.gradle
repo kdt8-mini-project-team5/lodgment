@@ -38,11 +38,12 @@ dependencies {
 	//redis
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '3.1.2'
 
-	//redisson
-	implementation 'org.redisson:redisson-spring-boot-starter:3.31.0'
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
+    //redisson
+    implementation 'org.redisson:redisson-spring-boot-starter:3.31.0'
 
 
-	//email
+    //email
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
 	//ELK에 필요한 라이브러리
