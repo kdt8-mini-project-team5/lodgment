@@ -11,8 +11,6 @@ public class CartListResponse {
 
     private List<CartResponse> cartList;
 
-    private int totalPage;
-
     @Data
     @Builder
     public static class CartResponse {

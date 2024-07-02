@@ -47,13 +47,4 @@ public class Cart extends BaseTimeStamp {
     @Column
     private LocalDateTime checkOutDateTime;
 
-
-
-    // 반정규화를 하여 숙소데이터를 저장할때 같이 저장하는것도 하나의 방법인듯
-
-    @Column
-    private Long accommodationId;
-    @Column
-    private String accommodationTitle;
-
 }

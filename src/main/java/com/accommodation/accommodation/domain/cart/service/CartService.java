@@ -55,8 +55,6 @@ public class CartService {
             .people(cartRequest.people())
             .checkInDateTime(checkInDatetime)
             .checkOutDateTime(checkOutDatetime)
-            .accommodationId(room.getAccommodation().getId())
-            .accommodationTitle(room.getAccommodation().getTitle())
             .build();
 
         cartRepository.save(cart);
@@ -69,13 +67,13 @@ public class CartService {
     }
 
 
-    public CartListResponse findCartListByUserId(CustomUserDetails customUserDetails,
-        Pageable pageable) {
+    @Transactional(readOnly = true)
+    public CartListResponse findCartListByUserId(CustomUserDetails customUserDetails) {
         //cart 정보 가져오기
-        Page<Cart> cartPage = cartRepository.findByUserId(customUserDetails.getUserId(), pageable);
+        List<Cart> cartList = cartRepository.findByUserId(customUserDetails.getUserId());
 
         return CartListResponse.builder()
-            .cartList(cartPage.stream()
+            .cartList(cartList.stream()
                 .map(cart -> CartResponse.builder()
                     .cartId(cart.getId())
                     .checkInDatetime(cart.getCheckInDateTime())
@@ -87,16 +85,16 @@ public class CartService {
                     .minPeople(cart.getRoom().getMinPeople())
                     .maxPeople(cart.getRoom().getMaxPeople())
                     .roomImg(cart.getRoom().getImages().get(1))
-                    .accommodationId(cart.getAccommodationId())
-                    .accommodationTitle(cart.getAccommodationTitle())
+                    .accommodationId(cart.getRoom().getAccommodation().getId())
+                    .accommodationTitle(cart.getRoom().getAccommodation().getTitle())
                     .build())
                 .toList()
             )
-            .totalPage(cartPage.getTotalPages())
             .build();
     }
 
 
+    @Transactional(readOnly = true)
     public CartCountResponse getCartCount(CustomUserDetails customUserDetails) {
         return CartCountResponse.builder().cartCount(cartRepository.countByUserId(customUserDetails.getUserId())).build();
     }

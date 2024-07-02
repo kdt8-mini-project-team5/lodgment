@@ -11,7 +11,8 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface CartRepository extends JpaRepository<Cart,Long> {
 
-    Page<Cart> findByUserId(Long userId , Pageable pageable);
+    @Query("SELECT c  FROM Cart c join FETCH c.room r JOIN FETCH r.accommodation WHERE c.user.id =:userId ORDER BY c.checkInDateTime ASC")
+    List<Cart> findByUserId(Long userId);
 
     Integer countByUserId(Long userId);
 

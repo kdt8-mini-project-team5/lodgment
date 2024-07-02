@@ -40,11 +40,10 @@ public class CartController {
     // 페이지 네이션    반환 + totalPage, 몇번째 페이지인지  sort -> 체크인 날짜가 빠른 순
     @GetMapping("")
     public ResponseEntity findCartListByUserId(
-        @ModelAttribute @Valid CartListRequest cartListRequest,
         @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){
 
-        CartListResponse response = cartService.findCartListByUserId(customUserDetails, PageRequest.of(cartListRequest.page()-1, cartListRequest.size()));
+        CartListResponse response = cartService.findCartListByUserId(customUserDetails);
         return ResponseEntity.ok(response);
     }
 
