@@ -26,6 +26,17 @@ public class CheckService {
     @Transactional(readOnly = true)
     public ResponseEntity<Void> check() {
         String token = jwtUtil.getTokenFromRequest(request);
+
+        if (token == null || !token.startsWith("Bearer ")) {
+            throw new AuthException(AuthErrorCode.NOT_LOGIN_USER);
+        }
+
+        token = token.substring(7).replace(" ", "");
+
+        if (!jwtUtil.validateToken(token, null)) {
+            throw new AuthException(AuthErrorCode.NOT_LOGIN_USER);
+        }
+
         Claims claims = jwtUtil.getUserInfoFromToken(token);
         String email = claims.getSubject();
 
@@ -33,6 +44,7 @@ public class CheckService {
         if (user.isEmpty()) {
             throw new AuthException(AuthErrorCode.NOT_LOGIN_USER);
         }
+
         return ResponseEntity.ok().build();
     }
 }
