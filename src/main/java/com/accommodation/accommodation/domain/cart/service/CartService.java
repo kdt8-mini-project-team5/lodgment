@@ -18,8 +18,6 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +33,7 @@ public class CartService {
     public void createCart(CartRequest cartRequest, Long userId) {
         // room 이 올바른지 확인 후 price 가져오기
         Room room = roomRepository.findRoomAndAccommodationById(cartRequest.roomId())
-            .orElseThrow(() -> new BookingException(BookingErrorCode.WRONG_ROOM_ID));
+            .orElseThrow(() -> new BookingException(BookingErrorCode.ROOM_NOT_FOUND));
 
         LocalDateTime checkInDatetime = LocalDateTime.of(cartRequest.checkInDate(),
             room.getAccommodation().getCheckIn());

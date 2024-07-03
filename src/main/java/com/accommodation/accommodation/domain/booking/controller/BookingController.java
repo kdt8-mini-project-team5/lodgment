@@ -35,9 +35,18 @@ public class BookingController {
     ) {
         //return bookingService.createBooking(customUserDetails, createBookingRequest); // Redisson 적용 전
         return bookingLockFacade.createBooking(customUserDetails, createBookingRequest);
+    }
+
+    @PostMapping("/cart")
+    public ResponseEntity createBookingsFromCart(
+        @Valid @RequestBody CreateBookingRequest createBookingRequest,
+        @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        //return bookingService.createBooking(customUserDetails, createBookingRequest); // Redisson 적용 전
+        return bookingLockFacade.createBooking(customUserDetails, createBookingRequest);
 
 
-        // TODO : parallelStream 적용 여부
+        // TODO : 추후 parallelStream 적용 여부 결정
         /*
         List<ResponseEntity<?>> responses = createBookingRequests.stream()
             .map(request -> {
@@ -50,8 +59,8 @@ public class BookingController {
 
     @GetMapping
     public ResponseEntity confirmBooking(
-        @RequestParam(name = "page",defaultValue = "0") int page,
-        @RequestParam(name="size",defaultValue = "10") int size,
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "10") int size,
         @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
         return bookingService.confirmBooking(customUserDetails, page, size);

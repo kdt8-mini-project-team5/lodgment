@@ -15,7 +15,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
-public interface BookingRepository extends JpaRepository<Booking, Long> {
+public interface BookingRepository extends JpaRepository<Booking, Long>, BookingRepositoryCustom{
 
     @Query(
             value = "SELECT COUNT(*) FROM booking WHERE room_id = :roomId " +
@@ -25,8 +25,13 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     long checkConflictingBookings(
             @Param("roomId") Long roomId,
             @Param("checkInDatetime") LocalDateTime checkInDatetime,
-            @Param("checkOutDatetime") LocalDateTime checkOutDatetime);
+            @Param("checkOutDatetime") LocalDateTime checkOutDatetime
+    );
 
+    Page<Booking> findAllByUserId(Long userId, Pageable pageable);
+
+    /*
+    // QueryDSL로 리팩토링됨
     @Modifying
     @Transactional
     @Query(
@@ -35,7 +40,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             nativeQuery = true
     )
     int saveBooking(@Param("booking") BookingDTO bookingDTO);
+    */
 
 
-    Page<Booking> findAllByUserId(Long userId, Pageable pageable);
 }
