@@ -98,7 +98,7 @@ public class CartService {
                     // 가져온 장바구니의 예약 못하는 값들 확인
                     Boolean isBooking = true;
                     // 체크아웃 날짜가 현재날짜보다 이후인 경우 false
-                    if(cart.getCheckOutDateTime().toLocalDate().isBefore(LocalDate.now()) || cart.getCheckInDateTime().toLocalDate().isEqual(LocalDate.now())){
+                    if(cart.getCheckOutDateTime().toLocalDate().isBefore(LocalDate.now()) || cart.getCheckOutDateTime().toLocalDate().isEqual(LocalDate.now())){
                         isBooking = false;
                     }
                     // 예약 내역 확인 후 예약 못하는 경우 false
