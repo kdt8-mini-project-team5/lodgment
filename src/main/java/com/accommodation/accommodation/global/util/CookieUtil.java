@@ -19,7 +19,7 @@ public class CookieUtil {
             .secure(true)
             .httpOnly(true)
             .path("/")
-            .sameSite("Lax")
+            .sameSite("None")
             .build();
     }
 
@@ -29,7 +29,7 @@ public class CookieUtil {
             .secure(true)
             .httpOnly(true)
             .path("/")
-            .sameSite("Lax")
+            .sameSite("None")
             .build();
     }
 
