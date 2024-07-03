@@ -7,6 +7,9 @@ import com.accommodation.accommodation.domain.booking.facade.BookingLockFacade;
 import com.accommodation.accommodation.domain.booking.model.request.CreateBookingRequest;
 import com.accommodation.accommodation.domain.booking.service.BookingService;
 import jakarta.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,16 +32,26 @@ public class BookingController {
     public ResponseEntity createBooking(
         @Valid @RequestBody CreateBookingRequest createBookingRequest,
         @AuthenticationPrincipal CustomUserDetails customUserDetails
-    ) throws InterruptedException {
-//        return bookingService.createBooking(customUserDetails, createBookingRequest);
+    ) {
+        //return bookingService.createBooking(customUserDetails, createBookingRequest); // Redisson 적용 전
         return bookingLockFacade.createBooking(customUserDetails, createBookingRequest);
 
+
+        // TODO : parallelStream 적용 여부
+        /*
+        List<ResponseEntity<?>> responses = createBookingRequests.stream()
+            .map(request -> {
+                return bookingLockFacade.createBooking(customUserDetails, request);
+            }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(responses);
+         */
     }
 
     @GetMapping
     public ResponseEntity confirmBooking(
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(name = "page",defaultValue = "0") int page,
+        @RequestParam(name="size",defaultValue = "10") int size,
         @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
         return bookingService.confirmBooking(customUserDetails, page, size);
