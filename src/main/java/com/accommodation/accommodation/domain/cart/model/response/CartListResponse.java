@@ -26,5 +26,8 @@ public class CartListResponse {
         private int maxPeople;
         private Long totalPrice;
         private String roomImg;
+
+        // 예약 가능 여부
+        private Boolean isBooking; //true = 예약 가능 , false = 예약 불가
     }
 }

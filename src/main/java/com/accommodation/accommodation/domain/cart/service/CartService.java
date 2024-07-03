@@ -15,6 +15,7 @@ import com.accommodation.accommodation.domain.cart.model.response.CartListRespon
 import com.accommodation.accommodation.domain.cart.repository.CartRepository;
 import com.accommodation.accommodation.domain.room.model.entity.Room;
 import com.accommodation.accommodation.domain.room.repository.RoomRepository;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -50,13 +51,7 @@ public class CartService {
         checkEqualsCartInDB(cartRequest.roomId(),userId,checkInDatetime,checkOutDatetime);
 
         // 예약 가능한 장바구니 인지
-        long conflictBookingCount = bookingRepository.checkConflictingBookings(
-            cartRequest.roomId(),
-            checkInDatetime,
-            checkOutDatetime
-        );
-
-        if (conflictBookingCount > 0) {
+        if(isConflictingBookings(cartRequest.roomId(),checkInDatetime,checkOutDatetime)){
             throw new BookingException(BookingErrorCode.CONFLICT_BOOKING);
         }
 
@@ -79,6 +74,18 @@ public class CartService {
         }
     }
 
+    private boolean isConflictingBookings(Long roomId, LocalDateTime checkInDateTime, LocalDateTime checkOutDateTime){
+        long conflictBookingCount = bookingRepository.checkConflictingBookings(
+            roomId,
+            checkInDateTime,
+            checkOutDateTime
+        );
+
+        if (conflictBookingCount > 0) {
+            return true;
+        }
+        return false;
+    }
 
     @Transactional(readOnly = true)
     public CartListResponse findCartListByUserId(CustomUserDetails customUserDetails) {
@@ -87,7 +94,18 @@ public class CartService {
 
         return CartListResponse.builder()
             .cartList(cartList.stream()
-                .map(cart -> CartResponse.builder()
+                .map(cart -> {
+                    // 가져온 장바구니의 예약 못하는 값들 확인
+                    Boolean isBooking = true;
+                    // 체크아웃 날짜가 현재날짜보다 이후인 경우 false
+                    if(cart.getCheckOutDateTime().toLocalDate().isBefore(LocalDate.now()) || cart.getCheckInDateTime().toLocalDate().isEqual(LocalDate.now())){
+                        isBooking = false;
+                    }
+                    // 예약 내역 확인 후 예약 못하는 경우 false
+                    if(isConflictingBookings(cart.getRoom().getId(), cart.getCheckInDateTime(),cart.getCheckOutDateTime())){
+                        isBooking = false;
+                    }
+                    return CartResponse.builder()
                     .cartId(cart.getId())
                     .checkInDatetime(cart.getCheckInDateTime())
                     .checkOutDatetime(cart.getCheckOutDateTime())
@@ -100,12 +118,13 @@ public class CartService {
                     .roomImg(cart.getRoom().getImages().get(1))
                     .accommodationId(cart.getRoom().getAccommodation().getId())
                     .accommodationTitle(cart.getRoom().getAccommodation().getTitle())
-                    .build())
+                        .isBooking(isBooking)
+                    .build();
+                })
                 .toList()
             )
             .build();
     }
-
 
     @Transactional(readOnly = true)
     public CartCountResponse getCartCount(CustomUserDetails customUserDetails) {
