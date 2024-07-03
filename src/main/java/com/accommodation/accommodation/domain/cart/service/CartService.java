@@ -16,10 +16,10 @@ import com.accommodation.accommodation.domain.cart.model.response.CartListRespon
 import com.accommodation.accommodation.domain.cart.repository.CartRepository;
 import com.accommodation.accommodation.domain.room.model.entity.Room;
 import com.accommodation.accommodation.domain.room.repository.RoomRepository;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,7 +39,7 @@ public class CartService {
     public void createCart(CartRequest cartRequest, Long userId) {
         // room 이 올바른지 확인 후 price 가져오기
         Room room = roomRepository.findRoomAndAccommodationById(cartRequest.roomId())
-            .orElseThrow(() -> new BookingException(BookingErrorCode.WRONG_ROOM_ID));
+            .orElseThrow(() -> new BookingException(BookingErrorCode.ROOM_NOT_FOUND));
 
         LocalDateTime checkInDatetime = LocalDateTime.of(cartRequest.checkInDate(),
             room.getAccommodation().getCheckIn());
@@ -100,7 +100,8 @@ public class CartService {
                     // 가져온 장바구니의 예약 못하는 값들 확인
                     Boolean isBooking = true;
                     // 체크아웃 날짜가 현재날짜보다 이후인 경우 false
-                    if(cart.getCheckOutDateTime().toLocalDate().isBefore(LocalDate.now()) || cart.getCheckOutDateTime().toLocalDate().isEqual(LocalDate.now())){
+                    if(cart.getCheckOutDateTime().toLocalDate().isBefore(LocalDate.now()) || cart.getCheckOutDateTime().toLocalDate().isEqual(
+                        LocalDate.now())){
                         isBooking = false;
                     }
                     // 예약 내역 확인 후 예약 못하는 경우 false
