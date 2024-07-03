@@ -23,6 +23,12 @@ public class Booking extends BaseTimeStamp {
     private String orderId;
 
     @Column
+    private String guestName;
+
+    @Column
+    private String guestTel;
+
+    @Column
     private int people;
 
     @Column

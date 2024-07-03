@@ -51,12 +51,12 @@ public class SecurityConfig {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         http
-                .authorizeHttpRequests(matcher -> matcher
-                    .requestMatchers("/api/register/**", "/api/login", "/api/check").permitAll()
-                    .requestMatchers("/api/accommodation/**").permitAll()
-                    .requestMatchers("/api/accommodation").permitAll()
-                    .requestMatchers("/actuator/**").permitAll()
-                    .anyRequest().authenticated());
+            .authorizeHttpRequests(matcher -> matcher
+                .requestMatchers("/api/register/**", "/api/login", "/api/check").permitAll()
+                .requestMatchers("/api/accommodation/**").permitAll()
+                .requestMatchers("/api/accommodation").permitAll()
+                .requestMatchers("/actuator/**").permitAll()
+                .anyRequest().authenticated());
 
         http.addFilterBefore(loginFilter(authenticationManager),
             UsernamePasswordAuthenticationFilter.class);
