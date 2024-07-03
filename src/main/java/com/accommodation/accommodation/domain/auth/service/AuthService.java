@@ -29,8 +29,8 @@ public class AuthService {
     public ResponseEntity<Boolean> logout() {
         SecurityContextHolder.clearContext();
 
-        String cookieString = "accessToken=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict"
-            + ", refreshToken=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict";
+        String cookieString = "accessToken=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=None"
+            + ", refreshToken=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=None";
 
         return ResponseEntity.ok()
             .header("Set-Cookie", cookieString)
