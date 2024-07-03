@@ -4,6 +4,7 @@ import com.accommodation.accommodation.domain.auth.config.model.CustomUserDetail
 import com.accommodation.accommodation.domain.auth.model.entity.User;
 import com.accommodation.accommodation.domain.booking.exception.BookingException;
 import com.accommodation.accommodation.domain.booking.exception.errorcode.BookingErrorCode;
+import com.accommodation.accommodation.domain.booking.repository.BookingRepository;
 import com.accommodation.accommodation.domain.cart.exception.CartException;
 import com.accommodation.accommodation.domain.cart.exception.errorcode.CartErrorCode;
 import com.accommodation.accommodation.domain.cart.model.entity.Cart;
@@ -18,8 +19,6 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +30,8 @@ public class CartService {
     private final RoomRepository roomRepository;
 
     private final CartRepository cartRepository;
+
+    private final BookingRepository bookingRepository;
 
     public void createCart(CartRequest cartRequest, Long userId) {
         // room 이 올바른지 확인 후 price 가져오기
@@ -44,8 +45,20 @@ public class CartService {
         Long totalPrice =
             ChronoUnit.DAYS.between(checkInDatetime.toLocalDate(), checkOutDatetime.toLocalDate())
                 * room.getPrice();
+
         // 같은 요청의 장바구니가 이미 있는지 확인
         checkEqualsCartInDB(cartRequest.roomId(),userId,checkInDatetime,checkOutDatetime);
+
+        // 예약 가능한 장바구니 인지
+        long conflictBookingCount = bookingRepository.checkConflictingBookings(
+            cartRequest.roomId(),
+            checkInDatetime,
+            checkOutDatetime
+        );
+
+        if (conflictBookingCount > 0) {
+            throw new BookingException(BookingErrorCode.CONFLICT_BOOKING);
+        }
 
         // 장바구니에 저장
         Cart cart = Cart.builder()
