@@ -1,6 +1,7 @@
 package com.accommodation.accommodation.domain.booking.model.dto;
 
 import java.time.LocalTime;
+import lombok.Builder;
 import lombok.Data;
 
 @Data

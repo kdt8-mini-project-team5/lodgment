@@ -4,6 +4,7 @@ import com.accommodation.accommodation.domain.auth.config.model.CustomUserDetail
 import com.accommodation.accommodation.domain.booking.exception.BookingException;
 import com.accommodation.accommodation.domain.booking.exception.errorcode.BookingErrorCode;
 import com.accommodation.accommodation.domain.booking.model.dto.BookingDTO;
+import com.accommodation.accommodation.domain.booking.model.dto.CartToBookingDTO;
 import com.accommodation.accommodation.domain.booking.model.request.CreateBookingRequest;
 import com.accommodation.accommodation.domain.booking.model.response.ConfirmBookingsResponse;
 import com.accommodation.accommodation.domain.booking.model.response.ConfirmBookingsResponse.BookingResponse;
@@ -143,6 +144,59 @@ public class BookingService {
             .build();
 
         return ResponseEntity.ok().body(bookingResponse);
+    }
+
+    @Transactional
+    public CreateBookingsResponse.BookingResult createBookingFromCart(
+        CartToBookingDTO cart, String guestName, String guestTel
+    ) {
+
+        long conflictBookingCount = bookingRepository.checkConflictingBookings(
+            cart.getRoomId(),
+            cart.getCheckInDatetime(),
+            cart.getCheckOutDatetime()
+        );
+
+        if (conflictBookingCount > 0) {
+            return null;
+            // throw new BookingException(BookingErrorCode.CONFLICT_BOOKING);
+        }
+
+        var booking = BookingDTO.builder()
+            .userId(cart.getUserId())
+            .orderId(UUID.randomUUID().toString())
+            .guestName(guestName)
+            .guestTel(guestTel)
+            .roomId(cart.getRoomId())
+            .checkInDatetime(cart.getCheckInDatetime())
+            .checkOutDatetime(cart.getCheckOutDatetime())
+            .people(cart.getPeople())
+            .totalPrice(cart.getTotalPrice())
+            .build();
+
+        var bookingResult = bookingRepository.saveBooking(booking);
+
+        if (bookingResult < 0) {
+            return null;
+        }
+
+        String roomImage = roomRepository.findRoomImageById(cart.getRoomId())
+            .flatMap(images -> images.stream().findFirst())
+            .orElse("");
+
+        return CreateBookingsResponse.BookingResult.builder()
+            .orderId(booking.getOrderId())
+            .guestName(booking.getGuestName())
+            .guestTel(booking.getGuestTel())
+            .accommodationTitle(cart.getAccommodationTitle())
+            .roomTitle(cart.getRoomTitle())
+            .roomImage(roomImage)
+            .minPeople(cart.getMinPeople())
+            .maxPeople(cart.getMaxPeople())
+            .checkInDatetime(cart.getCheckInDatetime())
+            .checkOutDatetime(cart.getCheckOutDatetime())
+            .totalPrice(cart.getTotalPrice())
+            .build();
     }
 
 }
