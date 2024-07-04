@@ -75,4 +75,8 @@ public class TokenService {
         tokenRepository.deleteById(refreshToken);
     }
 
+    public void dropTokensFromCookie(String refreshToken) {
+        tokenRepository.deleteById(refreshToken);
+    }
+
 }

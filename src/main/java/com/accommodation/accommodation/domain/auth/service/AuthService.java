@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthService {
 
+    private final TokenService tokenService;
+
     public ResponseEntity<Boolean> checkLoginStatus() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -26,14 +28,17 @@ public class AuthService {
         }
     }
 
-    public ResponseEntity<Boolean> logout() {
+    public ResponseEntity<Boolean> logout(String refreshToken) {
+        tokenService.dropTokens(refreshToken);
+
         SecurityContextHolder.clearContext();
 
-        String cookieString = "accessToken=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=None"
-            + ", refreshToken=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=None";
+// FE 요청으로 임시 주석 처리
+//        String cookieString = "accessToken=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=None"
+//            + ", refreshToken=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=None";
 
         return ResponseEntity.ok()
-            .header("Set-Cookie", cookieString)
+//            .header("Set-Cookie", cookieString)
             .body(true);
     }
 
