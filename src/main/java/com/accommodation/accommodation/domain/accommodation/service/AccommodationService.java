@@ -10,10 +10,13 @@ import com.accommodation.accommodation.domain.accommodation.model.type.Category;
 import com.accommodation.accommodation.domain.accommodation.model.response.AccommodationDetailResponse;
 import com.accommodation.accommodation.domain.accommodation.repository.AccommodationRepository;
 
+import com.accommodation.accommodation.domain.booking.repository.BookingRepository;
 import com.accommodation.accommodation.domain.room.model.entity.Room;
 import com.accommodation.accommodation.domain.room.model.response.RoomResponse;
 import com.accommodation.accommodation.domain.room.repository.RoomRepository;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +36,7 @@ public class AccommodationService {
 
     private final AccommodationRepository accommodationRepository;
     private final RoomRepository roomRepository;
+    private final BookingRepository bookingRepository;
 
     @Cacheable(cacheNames = "accommodationList", key = "#category.name() + ':' + #cursorId + ':' + #cursorMinPrice")
     @Transactional(readOnly = true)
@@ -90,21 +94,38 @@ public class AccommodationService {
         Accommodation accommodation = accommodationRepository.findAccommodationDetailById(id)
                 .orElseThrow(() -> new AccommodationException(AccommodationErrorCode.NOT_FOUND));
 
-        if (checkInDate != null && checkOutDate != null && checkInDate.isAfter(checkOutDate)) {
-            throw new AccommodationException(AccommodationErrorCode.INVALID_DATE);
-        }
+        List<Room> roomList = roomRepository.findRoomDetailByAccommodationId(accommodation.getId());
 
-        List<Room> roomList = roomRepository.findRoomDetailByAccommodationId(
-                accommodation.getId());
+        LocalDateTime checkInDateTime = checkInDate.atStartOfDay();
+        LocalDateTime checkOutDateTime = checkOutDate.atTime(LocalTime.MAX);
 
-        AccommodationDetailResponse response = AccommodationDetailResponse.builder()
+        List<Room> availableRooms = roomList.stream()
+                .filter(room -> {
+                    long conflicts = bookingRepository.checkConflictingBookings(
+                            room.getId(), checkInDateTime, checkOutDateTime);
+                    return conflicts == 0;
+                })
+                .toList();
+
+        List<RoomResponse> roomResponses = availableRooms.stream()
+                .map(room -> RoomResponse.builder()
+                        .roomId(room.getId())
+                        .title(room.getTitle())
+                        .price(room.getPrice())
+                        .minPeople(room.getMinPeople())
+                        .maxPeople(room.getMaxPeople())
+                        .img(new ArrayList<>(room.getImages()))
+                        .build())
+                .toList();
+
+        return AccommodationDetailResponse.builder()
                 .longitude(Double.parseDouble(accommodation.getLongitude()))
                 .latitude(Double.parseDouble(accommodation.getLatitude()))
                 .title(accommodation.getTitle())
                 .info(accommodation.getInfo())
                 .price(accommodation.getMinPrice())
-                .checkIn(accommodation.getCheckIn().toString())
-                .checkOut(accommodation.getCheckOut().toString())
+                .checkIn(checkInDate.toString())
+                .checkOut(checkOutDate.toString())
                 .shower(accommodation.isShower())
                 .aircone(accommodation.isAircone())
                 .tv(accommodation.isTv())
@@ -117,24 +138,10 @@ public class AccommodationService {
                 .address(accommodation.getAddress())
                 .tel(accommodation.getTel())
                 .dryer(accommodation.isDryer())
-                .img(new ArrayList<>(accommodation.getImages()))    // 숙소 이미지 리스트 초기화
-                .room(roomList.stream()
-                        .map(room -> {
-                            List<String> initializedRoomImages = new ArrayList<>(room.getImages()); // 방 이미지 리스트 초기화
-                            return RoomResponse.builder()
-                                    .roomId(room.getId())
-                                    .title(room.getTitle())
-                                    .price(room.getPrice())
-                                    .minPeople(room.getMinPeople())
-                                    .maxPeople(room.getMaxPeople())
-                                    .img(initializedRoomImages)
-                                    .build();
-                        })
-                        .toList())
-                .roomCount(roomList.size())
+                .img(new ArrayList<>(accommodation.getImages()))
+                .room(roomResponses)
+                .roomCount(roomResponses.size())
                 .build();
-
-        return response;
     }
 
 }
