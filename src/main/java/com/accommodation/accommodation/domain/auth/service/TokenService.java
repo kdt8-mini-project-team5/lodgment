@@ -6,6 +6,8 @@ import com.accommodation.accommodation.global.util.CookieUtil;
 import com.accommodation.accommodation.global.util.JwtProvider;
 import java.time.Instant;
 import java.util.Optional;
+
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
@@ -35,11 +37,11 @@ public class TokenService {
         return tokenRepository.save(tokenInfo);
     }
 
-    public ResponseCookie createAccessTokenCookie(String token) {
+    public Cookie createAccessTokenCookie(String token) {
         return cookieUtil.createAccessTokenCookie(token, jwtProvider.getRefreshTokenExpiration() / 1000);
     }
 
-    public ResponseCookie createRefreshTokenCookie(String token) {
+    public Cookie createRefreshTokenCookie(String token) {
         return cookieUtil.createRefreshTokenCookie(token,
             jwtProvider.getRefreshTokenExpiration() / 1000);
     }
