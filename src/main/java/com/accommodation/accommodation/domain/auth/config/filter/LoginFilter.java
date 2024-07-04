@@ -67,7 +67,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             FilterChain chain,
             Authentication authResult
     ) throws IOException {
-        log.info("로그인 성공");
         String userId = ((CustomUserDetails) authResult.getPrincipal()).getUsername();
 
         TokenInfo tokenInfo = tokenService.createTokens(userId);

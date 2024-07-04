@@ -21,7 +21,6 @@ public class TokenInfo {
     private String refreshToken;
     private String accessToken;
 
-    @Indexed
     private String userId;
 
     private Instant accessTokenExpiresAt;

@@ -67,6 +67,9 @@ public class CookieUtil {
         Cookie cookie = new Cookie(cookieName, null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setAttribute("SameSite", "None");
         //cookie.setDomain(FRONT_DOMAIN);
 
         response.addCookie(cookie);

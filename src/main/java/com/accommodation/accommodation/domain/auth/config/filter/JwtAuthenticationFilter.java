@@ -38,7 +38,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         FilterChain filterChain) throws ServletException, IOException {
 
         cookieUtil.getAccessTokenFromCookie(request).ifPresent(accessToken -> {
-
             try {
                 if(tokenService.validateAccessToken(accessToken)) {
                     // if Valid AccessToken
@@ -53,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     });
                 }
             } catch (Exception e) {
-                log.error("JWT 인증 실패 ", e);
+                log.error("JWT 인증 실패 : " + accessToken);
             }
         });
 
