@@ -16,13 +16,13 @@ public class AuthController {
     private final AuthService authService;
 
     @GetMapping("/check")
-    public ResponseEntity<Boolean> checkLoggedIn() {
-        return authService.checkLoginStatus();
+    public ResponseEntity checkLoggedIn() {
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/logout")
     public ResponseEntity<Boolean> logout(
-        @CookieValue(name = "refreshToken") String refreshToken
+            @CookieValue(name = "refreshToken") String refreshToken
     ) {
         return authService.logout(refreshToken);
     }
