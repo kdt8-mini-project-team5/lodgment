@@ -94,18 +94,10 @@ public class AccommodationService {
         Accommodation accommodation = accommodationRepository.findAccommodationDetailById(id)
                 .orElseThrow(() -> new AccommodationException(AccommodationErrorCode.NOT_FOUND));
 
-        List<Room> roomList = roomRepository.findRoomDetailByAccommodationId(accommodation.getId());
-
         LocalDateTime checkInDateTime = checkInDate.atStartOfDay();
         LocalDateTime checkOutDateTime = checkOutDate.atTime(LocalTime.MAX);
 
-        List<Room> availableRooms = roomList.stream()
-                .filter(room -> {
-                    long conflicts = bookingRepository.checkConflictingBookings(
-                            room.getId(), checkInDateTime, checkOutDateTime);
-                    return conflicts == 0;
-                })
-                .toList();
+        List<Room> availableRooms = roomRepository.findAvailableRoomsWithImages(accommodation.getId(), checkInDateTime, checkOutDateTime);
 
         List<RoomResponse> roomResponses = availableRooms.stream()
                 .map(room -> RoomResponse.builder()
