@@ -57,7 +57,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                     )
             );
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error("올바르지 않은 로그인 시도");
             throw new AuthException(AuthErrorCode.LOGIN_FAILED);
         }
     }
