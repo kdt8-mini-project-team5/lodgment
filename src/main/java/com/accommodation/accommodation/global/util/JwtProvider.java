@@ -21,14 +21,11 @@ public class JwtProvider {
     @Value("${jwt.key}")
     private String jwtSecret;
 
-    // 테스트를 위해 짧게 수정 + 추후 application 수정 필요
     //@Value("${jwt.access-token.expiration}")
-    private final long ACCESS_TOKEN_TIME = 60 * 60 * 1000L; // 60분
+    private final long ACCESS_TOKEN_TIME = 10 * 60 * 1000L; // 10분
     //@Value("${jwt.refresh-token.expiration}")
     private final long REFRESH_TOKEN_TIME = 2 * 24 * 60 * 60 * 1000L; // 2일
 
-    //private final long ACCESS_TOKEN_TIME = 2 * 10 * 1000L; // 20초
-    //private final long REFRESH_TOKEN_TIME = 3 * 10 * 1000L; // 30초
 
     private Key key;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
