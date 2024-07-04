@@ -52,7 +52,7 @@ public class SecurityConfig {
 
         http
             .authorizeHttpRequests(matcher -> matcher
-                .requestMatchers("/api/register/**", "/api/login", "/api/check").permitAll()
+                .requestMatchers("/api/register/**", "/api/login").permitAll()
                 .requestMatchers("/api/accommodation/**").permitAll()
                 .requestMatchers("/api/accommodation").permitAll()
                 .requestMatchers("/actuator/**").permitAll()

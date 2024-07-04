@@ -43,7 +43,11 @@ public class AccommodationService {
     public AccommodationsResponse findByCategory(Category category, Long cursorId, Pageable pageable, Long cursorMinPrice) {
         Page<AccommodationSimpleDTO> accommodationPage;
         if (cursorId == null) {
-            accommodationPage = accommodationRepository.findByCategory(category, pageable);
+            if (cursorMinPrice == null) {
+                accommodationPage = accommodationRepository.findByCategory(category, pageable);
+            }else{
+                accommodationPage = accommodationRepository.findByCategoryWithCursorMinPrice(category,cursorMinPrice,pageable);
+            }
         } else {
             accommodationPage = accommodationRepository.findByCategoryWithCursor(category, cursorId, pageable, cursorMinPrice);
         }
