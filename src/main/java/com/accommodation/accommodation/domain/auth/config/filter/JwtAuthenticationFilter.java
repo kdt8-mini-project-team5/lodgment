@@ -50,15 +50,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     // if Invalid AccessToken
                     cookieUtil.getRefreshTokenFromCookie(request).ifPresent(refreshToken -> {
                         tokenService.renewTokens(refreshToken).ifPresent(newTokenInfo -> {
-
-                            ResponseCookie newAccessTokenCookie = tokenService.createAccessTokenCookie(
-                                newTokenInfo.getAccessToken());
-                            ResponseCookie newRefreshTokenCookie = tokenService.createRefreshTokenCookie(
-                                newTokenInfo.getRefreshToken());
-
-                            response.addHeader(HttpHeaders.SET_COOKIE, newAccessTokenCookie.toString());
-                            response.addHeader(HttpHeaders.SET_COOKIE, newRefreshTokenCookie.toString());
-
                             setAuthentication(newTokenInfo.getUserId());
                         });
                     });
