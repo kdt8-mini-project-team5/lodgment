@@ -4,6 +4,7 @@ import com.accommodation.accommodation.domain.auth.config.model.CustomUserDetail
 import com.accommodation.accommodation.domain.auth.model.entity.User;
 import com.accommodation.accommodation.domain.booking.exception.BookingException;
 import com.accommodation.accommodation.domain.booking.exception.errorcode.BookingErrorCode;
+import com.accommodation.accommodation.domain.booking.model.dto.CartToBookingDTO;
 import com.accommodation.accommodation.domain.booking.repository.BookingRepository;
 import com.accommodation.accommodation.domain.cart.exception.CartException;
 import com.accommodation.accommodation.domain.cart.exception.errorcode.CartErrorCode;
@@ -21,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -140,5 +142,31 @@ public class CartService {
         if (deleteCount == 0) {
             throw new CartException(CartErrorCode.FAIL_DELETE);
         }
+    }
+
+
+    @Transactional
+    public Optional<CartToBookingDTO> getCartForBooking(Long cartId) {
+        var result =  cartRepository.findById(cartId)
+            .map(cart -> CartToBookingDTO.builder()
+                .userId(cart.getUser().getId())
+                .roomId(cart.getRoom().getId())
+                .people(cart.getPeople())
+                .accommodationTitle(cart.getRoom().getAccommodation().getTitle())
+                .roomTitle(cart.getRoom().getTitle())
+                .totalPrice(cart.getTotalPrice())
+                .checkInDatetime(cart.getCheckInDateTime())
+                .checkOutDatetime(cart.getCheckOutDateTime())
+                .maxPeople(cart.getRoom().getMaxPeople())
+                .minPeople(cart.getRoom().getMinPeople())
+                .build());
+
+        deleteCartById(cartId);
+
+        return result;
+    }
+
+    public void deleteCartById(Long cartId) {
+        cartRepository.deleteById(cartId);
     }
 }

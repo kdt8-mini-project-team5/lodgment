@@ -3,16 +3,17 @@ package com.accommodation.accommodation.domain.booking.service;
 import com.accommodation.accommodation.domain.auth.config.model.CustomUserDetails;
 import com.accommodation.accommodation.domain.booking.exception.BookingException;
 import com.accommodation.accommodation.domain.booking.exception.errorcode.BookingErrorCode;
-import com.accommodation.accommodation.domain.booking.facade.BookingLockFacade;
 import com.accommodation.accommodation.domain.booking.model.dto.BookingDTO;
+import com.accommodation.accommodation.domain.booking.model.dto.CartToBookingDTO;
 import com.accommodation.accommodation.domain.booking.model.request.CreateBookingRequest;
-import com.accommodation.accommodation.domain.booking.model.response.ConfirmBookingResponse;
-import com.accommodation.accommodation.domain.booking.model.response.ConfirmBookingResponse.BookingResponse;
-import com.accommodation.accommodation.domain.booking.model.response.CreateBookingResponse;
+import com.accommodation.accommodation.domain.booking.model.response.ConfirmBookingsResponse;
+import com.accommodation.accommodation.domain.booking.model.response.ConfirmBookingsResponse.BookingResponse;
+import com.accommodation.accommodation.domain.booking.model.response.CreateBookingsResponse;
 import com.accommodation.accommodation.domain.booking.repository.BookingRepository;
 import com.accommodation.accommodation.domain.room.repository.RoomRepository;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class BookingService {
         CreateBookingRequest request
         ) {
         var roomDetails = roomRepository.findRoomDetailsById(request.roomId())
-            .orElseThrow(() -> new BookingException(BookingErrorCode.WRONG_ROOM_ID));
+            .orElseThrow(() -> new BookingException(BookingErrorCode.ROOM_NOT_FOUND));
 
         int roomMaxPeople = roomDetails.getMaxPeople();
         int roomMinPeople = roomDetails.getMinPeople();
@@ -44,10 +45,9 @@ public class BookingService {
         }
 
         LocalDateTime checkInDatetime = LocalDateTime.of(request.checkInDate(),
-            roomDetails.getCheckIn());
+            roomDetails.getCheckInTime());
         LocalDateTime checkOutDatetime = LocalDateTime.of(request.checkOutDate(),
-            roomDetails.getCheckOut());
-
+            roomDetails.getCheckOutTime());
 
         long conflictBookingCount = bookingRepository.checkConflictingBookings(
             request.roomId(),
@@ -66,6 +66,8 @@ public class BookingService {
         var booking = BookingDTO.builder()
             .userId(customUserDetails.getUserId())
             .orderId(UUID.randomUUID().toString())
+            .guestName(request.guestName())
+            .guestTel(request.guestTel())
             .roomId(request.roomId())
             .checkInDatetime(checkInDatetime)
             .checkOutDatetime(checkOutDatetime)
@@ -76,15 +78,28 @@ public class BookingService {
         var bookingResult = bookingRepository.saveBooking(booking);
         // TODO : DB에서 발생한 예약 실패에 대한 예외 작업
 
-
         // TODO : to send a email of booking confirmation
 
-        var response = CreateBookingResponse.builder()
-            .orderId(booking.getOrderId())
-            .roomTitle(roomDetails.getTitle())
-            .checkInDate(request.checkInDate())
-            .checkOutDate(request.checkOutDate())
-            .totalPrice(totalPrice)
+        String roomImage = roomRepository.findRoomImageById(request.roomId())
+            .flatMap(images -> images.stream().findFirst())
+            .orElse("");
+
+        var response = CreateBookingsResponse.builder()
+            .items(Collections.singletonList(
+                CreateBookingsResponse.BookingResult.builder()
+                    .orderId(booking.getOrderId())
+                    .guestName(request.guestName())
+                    .guestTel(request.guestTel())
+                    .accommodationTitle(roomDetails.getAccommodationTitle())
+                    .roomTitle(roomDetails.getRoomTitle())
+                    .roomImage(roomImage)
+                    .minPeople(roomMinPeople)
+                    .maxPeople(roomMaxPeople)
+                    .checkInDatetime(checkInDatetime)
+                    .checkOutDatetime(checkOutDatetime)
+                    .totalPrice(totalPrice)
+                    .build()
+            ))
             .build();
 
         return ResponseEntity.ok().body(response);
@@ -97,29 +112,91 @@ public class BookingService {
         int page,
         int size
     ) {
-
         Pageable pageable = PageRequest.of(page, size);
-        var bookingList = bookingRepository.findAllByUserId(customUserDetails.getUserId(), pageable);
+        var bookingList = bookingRepository.findAllByUserId(customUserDetails.getUserId(),
+            pageable);
 
-        var bookingResponse = ConfirmBookingResponse.builder()
+        var bookingResponse = ConfirmBookingsResponse.builder()
             .bookingList(bookingList.stream()
-                .map(booking -> BookingResponse.builder()
-                    .orderId(booking.getOrderId())
-                    .accommodationTitle(booking.getRoom().getAccommodation().getTitle())
-                    .roomTitle(booking.getRoom().getTitle())
-                    .roomImg("") // TODO : 확인 필요 (이미지 1개만 전달해 주는 지)
-                    .minPeople(booking.getRoom().getMinPeople())
-                    .maxPeople(booking.getRoom().getMaxPeople())
-                    .checkInDatetime(booking.getCheckInDatetime())
-                    .checkOutDatetime(booking.getCheckOutDatetime())
-                    .totalPrice(booking.getTotalPrice())
-                    .build())
+                .map(booking -> {
+                    var roomImages = booking.getRoom().getImages();
+                    var firstImg = roomImages != null && !roomImages.isEmpty()
+                        ? roomImages.get(0)
+                        : "";
+
+                    return BookingResponse.builder()
+                        .orderId(booking.getOrderId())
+                        .guestName(booking.getGuestName())
+                        .guestTel(booking.getGuestTel())
+                        .accommodationTitle(booking.getRoom().getAccommodation().getTitle())
+                        .roomTitle(booking.getRoom().getTitle())
+                        .roomImg(firstImg)
+                        .minPeople(booking.getRoom().getMinPeople())
+                        .maxPeople(booking.getRoom().getMaxPeople())
+                        .checkInDatetime(booking.getCheckInDatetime())
+                        .checkOutDatetime(booking.getCheckOutDatetime())
+                        .totalPrice(booking.getTotalPrice())
+                        .build();
+                })
                 .collect(Collectors.toList())
             )
             .totalElements(bookingList.getTotalElements())
             .build();
 
         return ResponseEntity.ok().body(bookingResponse);
+    }
+
+    @Transactional
+    public CreateBookingsResponse.BookingResult createBookingFromCart(
+        CartToBookingDTO cart, String guestName, String guestTel
+    ) {
+
+        long conflictBookingCount = bookingRepository.checkConflictingBookings(
+            cart.getRoomId(),
+            cart.getCheckInDatetime(),
+            cart.getCheckOutDatetime()
+        );
+
+        if (conflictBookingCount > 0) {
+            return null;
+            // throw new BookingException(BookingErrorCode.CONFLICT_BOOKING);
+        }
+
+        var booking = BookingDTO.builder()
+            .userId(cart.getUserId())
+            .orderId(UUID.randomUUID().toString())
+            .guestName(guestName)
+            .guestTel(guestTel)
+            .roomId(cart.getRoomId())
+            .checkInDatetime(cart.getCheckInDatetime())
+            .checkOutDatetime(cart.getCheckOutDatetime())
+            .people(cart.getPeople())
+            .totalPrice(cart.getTotalPrice())
+            .build();
+
+        var bookingResult = bookingRepository.saveBooking(booking);
+
+        if (bookingResult < 0) {
+            return null;
+        }
+
+        String roomImage = roomRepository.findRoomImageById(cart.getRoomId())
+            .flatMap(images -> images.stream().findFirst())
+            .orElse("");
+
+        return CreateBookingsResponse.BookingResult.builder()
+            .orderId(booking.getOrderId())
+            .guestName(booking.getGuestName())
+            .guestTel(booking.getGuestTel())
+            .accommodationTitle(cart.getAccommodationTitle())
+            .roomTitle(cart.getRoomTitle())
+            .roomImage(roomImage)
+            .minPeople(cart.getMinPeople())
+            .maxPeople(cart.getMaxPeople())
+            .checkInDatetime(cart.getCheckInDatetime())
+            .checkOutDatetime(cart.getCheckOutDatetime())
+            .totalPrice(cart.getTotalPrice())
+            .build();
     }
 
 }

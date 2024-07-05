@@ -35,7 +35,6 @@ public class SecurityConfig {
     private final JwtProvider jwtProvider;
     private final CookieUtil cookieUtil;
     private final UserDetailsServiceImpl userDetailsService;
-    private final AuthenticationConfiguration authenticationConfiguration;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
@@ -52,7 +51,7 @@ public class SecurityConfig {
 
         http
             .authorizeHttpRequests(matcher -> matcher
-                .requestMatchers("/api/register/**", "/api/login", "/api/check").permitAll()
+                .requestMatchers("/api/register/**", "/api/login").permitAll()
                 .requestMatchers("/api/accommodation/**").permitAll()
                 .requestMatchers("/api/accommodation").permitAll()
                 .requestMatchers("/actuator/**").permitAll()

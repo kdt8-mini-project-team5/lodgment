@@ -6,10 +6,13 @@ import com.accommodation.accommodation.global.util.CookieUtil;
 import com.accommodation.accommodation.global.util.JwtProvider;
 import java.time.Instant;
 import java.util.Optional;
+
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseCookie;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TokenService {
@@ -35,18 +38,19 @@ public class TokenService {
         return tokenRepository.save(tokenInfo);
     }
 
-    public ResponseCookie createAccessTokenCookie(String token) {
+    public Cookie createAccessTokenCookie(String token) {
         return cookieUtil.createAccessTokenCookie(token, jwtProvider.getRefreshTokenExpiration() / 1000);
     }
 
-    public ResponseCookie createRefreshTokenCookie(String token) {
+    public Cookie createRefreshTokenCookie(String token) {
         return cookieUtil.createRefreshTokenCookie(token,
             jwtProvider.getRefreshTokenExpiration() / 1000);
     }
 
     public boolean validateAccessToken(String accessToken) {
         return jwtProvider.validateToken(accessToken) && jwtProvider.isAccessToken(accessToken);
-            //&& tokenRepository.findByAccessToken(accessToken).isPresent(); // Redis 교차 검증은 추후 결정
+            // && tokenRepository.findByAccessToken(accessToken).isPresent(); // Redis 교차 검증
+        // TODO : 로그아웃 시 AccessTokenBlockList 만들어 작성
     }
 
     public boolean validateRefreshToken(String refreshToken) {
@@ -72,6 +76,10 @@ public class TokenService {
     }
 
     public void dropTokens(String refreshToken) {
+        tokenRepository.deleteById(refreshToken);
+    }
+
+    public void dropTokensFromCookie(String refreshToken) {
         tokenRepository.deleteById(refreshToken);
     }
 

@@ -30,7 +30,7 @@ public class CheckInCheckOutDateValidator implements ConstraintValidator<CheckIn
 
         if (!checkInDate.isAfter(LocalDate.now()) && !checkInDate.equals(LocalDate.now()) ) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("현재날짜보다 checkInDate가 빠를 수 없습니다.")//오류메세지
+            context.buildConstraintViolationWithTemplate("현재날짜보다 체크인 날짜가 빠를 수 없습니다.")//오류메세지
                 .addPropertyNode(this.checkInDate)//대상 필드
                 .addConstraintViolation();
             return false;
@@ -38,7 +38,7 @@ public class CheckInCheckOutDateValidator implements ConstraintValidator<CheckIn
 
         if (!checkOutDate.isAfter(checkInDate)) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("checkInDate보다 checkOutDate가 빠르거나 같을 수 없습니다.")//오류메세지
+            context.buildConstraintViolationWithTemplate("체크인날짜보다 체크아웃 날짜가 빠르거나 같을 수 없습니다.")//오류메세지
                 .addPropertyNode(this.checkOutDate)//대상 필드
                 .addConstraintViolation();
             return false;

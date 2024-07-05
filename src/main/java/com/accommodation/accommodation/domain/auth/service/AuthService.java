@@ -1,40 +1,38 @@
 package com.accommodation.accommodation.domain.auth.service;
 
+import com.accommodation.accommodation.domain.auth.exception.AuthException;
+import com.accommodation.accommodation.domain.auth.exception.errorcode.AuthErrorCode;
+import com.accommodation.accommodation.global.util.CookieUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
-    public ResponseEntity<Boolean> checkLoginStatus() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    private final TokenService tokenService;
+    private final CookieUtil cookieUtil;
 
-        if (authentication != null && authentication.isAuthenticated()
-        && !(authentication.getPrincipal() instanceof String)) {
-            // 로그인 되어 있는 경우
-            // CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal(); // 사용자 ID가 필요하다면 사용
-            return ResponseEntity.status(HttpStatus.OK).body(true);
+    public ResponseEntity<Boolean> logout(
+        HttpServletRequest request, HttpServletResponse response
+    ) {
 
-        } else {
-            // 로그인 되어 있지 않은 경우
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
-        }
-    }
+        String refreshToken = cookieUtil.getRefreshTokenFromCookie(request)
+            .orElseThrow(() -> new AuthException(AuthErrorCode.INVALID_JWT_TOKEN));
 
-    public ResponseEntity<Boolean> logout() {
+        tokenService.dropTokens(refreshToken);
+
         SecurityContextHolder.clearContext();
 
-        String cookieString = "accessToken=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=None"
-            + ", refreshToken=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=None";
+        cookieUtil.deleteCookie(response, CookieUtil.ACCESS_TOKEN_COOKIE_NAME);
+        cookieUtil.deleteCookie(response, CookieUtil.REFRESH_TOKEN_COOKIE_NAME);
 
-        return ResponseEntity.ok()
-            .header("Set-Cookie", cookieString)
-            .body(true);
+        return ResponseEntity.ok().body(true);
     }
-
 }

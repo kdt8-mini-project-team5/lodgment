@@ -12,5 +12,7 @@ public record CreateBookingRequest (
     @NotNull Long roomId,
     @Positive int numPeople,
     @NotNull @FutureOrPresent LocalDate checkInDate,
-    @NotNull @Future LocalDate checkOutDate
+    @NotNull @Future LocalDate checkOutDate,
+    @NotNull String guestName,
+    @NotNull String guestTel
 ) {}

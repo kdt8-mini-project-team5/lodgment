@@ -21,6 +21,11 @@ public interface AccommodationRepository extends JpaRepository<Accommodation, Lo
         + "FROM Accommodation a WHERE a.category = :category ORDER BY a.minPrice , a.id DESC") // minPrice 기반 정렬
     Page<AccommodationSimpleDTO> findByCategory(Category category, Pageable pageable);
 
+    @Query("SELECT new com.accommodation.accommodation.domain.accommodation.model.response.AccommodationSimpleDTO(a.id,a.title,a.minPrice,a.region) "
+        + "FROM Accommodation a WHERE a.category = :category and a.minPrice = :minPrice or a.minPrice > :minPrice ORDER BY a.minPrice , a.id DESC") // minPrice 기반 정렬
+    Page<AccommodationSimpleDTO> findByCategoryWithCursorMinPrice(Category category,Long minPrice ,Pageable pageable);
+
+
     @Query("SELECT a.images FROM Accommodation a WHERE a.id in :ids")
     List<List<String>> findAccommodationImagesByIds(List<Long> ids);
 
