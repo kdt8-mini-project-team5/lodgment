@@ -14,8 +14,6 @@ import com.accommodation.accommodation.domain.cart.model.response.CartCountRespo
 import com.accommodation.accommodation.domain.cart.model.response.CartListResponse;
 import com.accommodation.accommodation.domain.cart.model.response.CartListResponse.CartResponse;
 import com.accommodation.accommodation.domain.cart.repository.CartRepository;
-import com.accommodation.accommodation.domain.room.exception.RoomException;
-import com.accommodation.accommodation.domain.room.exception.errorcode.RoomErrorCode;
 import com.accommodation.accommodation.domain.room.model.entity.Room;
 import com.accommodation.accommodation.domain.room.repository.RoomRepository;
 import java.time.LocalDate;
@@ -101,7 +99,7 @@ public class CartService {
                 .map(cart -> {
                     // 가져온 장바구니의 예약 못하는 값들 확인
                     Boolean isBooking = true;
-                    // 체크인 날짜가 현재날짜보다 이후인 경우 false
+                    // 체크아웃 날짜가 현재날짜보다 이후인 경우 false
                     if(cart.getCheckInDateTime().toLocalDate().isBefore(LocalDate.now())){
                         isBooking = false;
                     }

@@ -6,7 +6,6 @@ import com.accommodation.accommodation.domain.auth.exception.errorcode.AuthError
 import com.accommodation.accommodation.domain.auth.model.entity.TokenInfo;
 import com.accommodation.accommodation.domain.auth.model.request.LoginRequest;
 import com.accommodation.accommodation.domain.auth.service.TokenService;
-import com.accommodation.accommodation.global.util.JwtProvider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -17,8 +16,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -57,7 +54,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                     )
             );
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error("올바르지 않은 로그인 시도");
             throw new AuthException(AuthErrorCode.LOGIN_FAILED);
         }
     }
@@ -70,7 +67,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             FilterChain chain,
             Authentication authResult
     ) throws IOException {
-        log.info("로그인 성공");
         String userId = ((CustomUserDetails) authResult.getPrincipal()).getUsername();
 
         TokenInfo tokenInfo = tokenService.createTokens(userId);

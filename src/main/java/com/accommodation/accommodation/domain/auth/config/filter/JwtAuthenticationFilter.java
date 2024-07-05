@@ -14,8 +14,6 @@ import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -40,7 +38,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         FilterChain filterChain) throws ServletException, IOException {
 
         cookieUtil.getAccessTokenFromCookie(request).ifPresent(accessToken -> {
-
             try {
                 if(tokenService.validateAccessToken(accessToken)) {
                     // if Valid AccessToken
@@ -55,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     });
                 }
             } catch (Exception e) {
-                log.error("JWT 인증 실패 ", e);
+                log.error("JWT 인증 실패 : " + accessToken);
             }
         });
 

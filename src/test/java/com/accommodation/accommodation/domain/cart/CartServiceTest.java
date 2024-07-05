@@ -1,13 +1,12 @@
 package com.accommodation.accommodation.domain.cart;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.assertj.core.api.Assertions.*;
 
 import com.accommodation.accommodation.domain.accommodation.model.entity.Accommodation;
 import com.accommodation.accommodation.domain.auth.config.model.CustomUserDetails;
@@ -124,7 +123,8 @@ public class CartServiceTest {
     void createCart_WrongRoomId() {
         when(roomRepository.findRoomAndAccommodationById(cartRequest.roomId())).thenReturn(Optional.empty());
 
-        assertThrows(RoomException.class, () -> cartService.createCart(cartRequest, customUserDetails.getUserId()));
+        assertThrows(
+            RoomException.class, () -> cartService.createCart(cartRequest, customUserDetails.getUserId()));
 
         verify(cartRepository, never()).save(any(Cart.class));
     }
@@ -150,7 +150,8 @@ public class CartServiceTest {
         when(cartRepository.existsByRoomIdAndUserIdAndCheckInDateTimeAndCheckOutDateTime(any(), any(), any(), any())).thenReturn(false);
         when(bookingRepository.checkConflictingBookings(any(), any(), any())).thenReturn(1L);
 
-        assertThrows(BookingException.class,()-> cartService.createCart(cartRequest, customUserDetails.getUserId()));
+        assertThrows(
+            BookingException.class,()-> cartService.createCart(cartRequest, customUserDetails.getUserId()));
 
         verify(cartRepository, never()).save(any(Cart.class));
     }
@@ -235,8 +236,4 @@ public class CartServiceTest {
         assertThrows(CartException.class,()-> cartService.deleteCartByCartIdList(cartIdList,customUserDetails));
 
     }
-
-
-
-
 }
