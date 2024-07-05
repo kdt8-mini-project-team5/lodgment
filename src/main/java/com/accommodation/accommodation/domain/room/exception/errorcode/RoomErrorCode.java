@@ -7,8 +7,8 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public class RoomErrorCode implements ErrorCode {
-
+public enum RoomErrorCode implements ErrorCode {
+    ROOM_NOT_FOUND("객실 정보가 존재하지 않습니다.", HttpStatus.NOT_FOUND),
     ;
 
     private final String statusText;
