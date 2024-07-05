@@ -9,9 +9,10 @@ import java.util.Optional;
 
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseCookie;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TokenService {
@@ -48,7 +49,8 @@ public class TokenService {
 
     public boolean validateAccessToken(String accessToken) {
         return jwtProvider.validateToken(accessToken) && jwtProvider.isAccessToken(accessToken);
-            //&& tokenRepository.findByAccessToken(accessToken).isPresent(); // Redis 교차 검증은 추후 결정
+            // && tokenRepository.findByAccessToken(accessToken).isPresent(); // Redis 교차 검증
+        // TODO : 로그아웃 시 AccessTokenBlockList 만들어 작성
     }
 
     public boolean validateRefreshToken(String refreshToken) {

@@ -2,11 +2,12 @@ package com.accommodation.accommodation.domain.auth.controller;
 
 import com.accommodation.accommodation.domain.auth.config.model.CustomUserDetails;
 import com.accommodation.accommodation.domain.auth.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,9 +30,9 @@ public class AuthController {
 
     @GetMapping("/logout")
     public ResponseEntity<Boolean> logout(
-            @CookieValue(name = "refreshToken") String refreshToken
+            HttpServletRequest request, HttpServletResponse response
     ) {
-        return authService.logout(refreshToken);
+        return authService.logout(request, response);
     }
 
 }

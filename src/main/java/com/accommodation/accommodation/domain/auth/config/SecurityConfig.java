@@ -35,7 +35,6 @@ public class SecurityConfig {
     private final JwtProvider jwtProvider;
     private final CookieUtil cookieUtil;
     private final UserDetailsServiceImpl userDetailsService;
-    private final AuthenticationConfiguration authenticationConfiguration;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,

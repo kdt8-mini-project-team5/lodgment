@@ -50,11 +50,11 @@ public class BookingController {
 
     @GetMapping
     public ResponseEntity confirmBooking(
-        @RequestParam(name = "page", defaultValue = "0") int page,
-        @RequestParam(name = "size", defaultValue = "10") int size,
+        @RequestParam(name = "page", defaultValue = "1") int page,
+        @RequestParam(name = "size", defaultValue = "4") int size,
         @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
-        return bookingService.confirmBooking(customUserDetails, page, size);
+        return bookingService.confirmBooking(customUserDetails, page - 1, size);
     }
 
 }
