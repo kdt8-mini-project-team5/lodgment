@@ -14,8 +14,6 @@ import com.accommodation.accommodation.domain.cart.model.response.CartCountRespo
 import com.accommodation.accommodation.domain.cart.model.response.CartListResponse;
 import com.accommodation.accommodation.domain.cart.model.response.CartListResponse.CartResponse;
 import com.accommodation.accommodation.domain.cart.repository.CartRepository;
-import com.accommodation.accommodation.domain.room.exception.RoomException;
-import com.accommodation.accommodation.domain.room.exception.errorcode.RoomErrorCode;
 import com.accommodation.accommodation.domain.room.model.entity.Room;
 import com.accommodation.accommodation.domain.room.repository.RoomRepository;
 import java.time.LocalDate;

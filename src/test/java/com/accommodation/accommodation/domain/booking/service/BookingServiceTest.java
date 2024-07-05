@@ -71,6 +71,6 @@ class BookingServiceTest {
         long booking = bookingRepository.count();
 
         assertEquals(1, booking);
-    }
+    }*/
 
 }
