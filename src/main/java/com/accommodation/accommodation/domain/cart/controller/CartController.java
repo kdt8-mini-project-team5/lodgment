@@ -38,7 +38,6 @@ public class CartController {
         return ResponseEntity.ok().build();
     }
 
-    // 페이지 네이션    반환 + totalPage, 몇번째 페이지인지  sort -> 체크인 날짜가 빠른 순
     @GetMapping("")
     public ResponseEntity findCartListByUserId(
         @AuthenticationPrincipal CustomUserDetails customUserDetails
