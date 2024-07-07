@@ -20,6 +20,9 @@
 ---
 
 **아키텍쳐**
+<br/>
+<img src="https://github.com/kdt8-mini-project-team5/lodgment/assets/117788867/2d477747-602d-49c4-9eed-34c552b5929f"  width="600" height="450"/>
+<img src="https://github.com/kdt8-mini-project-team5/lodgment/assets/117788867/b57abb1f-229e-4ac3-aec8-8171c48c660e"  width="600" height="450"/>
 
 
 ---
@@ -41,6 +44,7 @@
 ---
 
 ## ERD
+<img src="https://github.com/kdt8-mini-project-team5/lodgment/assets/117788867/cac3b7b3-4baa-4d8a-a7bb-16930ed6d1e2"  width="750" height="550"/>
 
 ---
 
