@@ -62,4 +62,8 @@
     - 장바구니 삭제
 
 ## API 명세서
-https://www.notion.so/API-93615a95e2eb4c559fa91d54fe32e5c8?pvs=4
+https://sincere-nova-ec6.notion.site/API-93615a95e2eb4c559fa91d54fe32e5c8?pvs=4
+
+## 발표자료
+
+https://drive.google.com/drive/folders/1BHb-9GAqZAKyT5bBluAtRcC0Q1u1KW1Y?usp=drive_link
