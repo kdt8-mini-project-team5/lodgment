@@ -38,7 +38,7 @@ public class AccommodationService {
     private final RoomRepository roomRepository;
     private final BookingRepository bookingRepository;
 
-    @Cacheable(cacheNames = "accommodationList", key = "#category.name() + ':' + #cursorId + ':' + #cursorMinPrice")
+//    @Cacheable(cacheNames = "accommodationList", key = "#category.name() + ':' + #cursorId + ':' + #cursorMinPrice")
     @Transactional(readOnly = true)
     public AccommodationsResponse findByCategory(Category category, Long cursorId, Pageable pageable, Long cursorMinPrice) {
         Page<AccommodationSimpleDTO> accommodationPage;
@@ -92,7 +92,7 @@ public class AccommodationService {
                 .build();
     }
 
-    @Cacheable(cacheNames = "accommodationDetails", key = "#id", unless = "#result == null")
+//    @Cacheable(cacheNames = "accommodationDetails", key = "#id", unless = "#result == null")
     @Transactional(readOnly = true)
     public AccommodationDetailResponse getAccommodationById(Long id, LocalDate checkInDate, LocalDate checkOutDate) {
         Accommodation accommodation = accommodationRepository.findAccommodationDetailById(id)
