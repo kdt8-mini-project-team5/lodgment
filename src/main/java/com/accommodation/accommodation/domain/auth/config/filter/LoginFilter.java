@@ -3,36 +3,38 @@ package com.accommodation.accommodation.domain.auth.config.filter;
 import com.accommodation.accommodation.domain.auth.config.model.CustomUserDetails;
 import com.accommodation.accommodation.domain.auth.exception.AuthException;
 import com.accommodation.accommodation.domain.auth.exception.errorcode.AuthErrorCode;
-import com.accommodation.accommodation.domain.auth.model.entity.User;
+import com.accommodation.accommodation.domain.auth.model.entity.TokenInfo;
 import com.accommodation.accommodation.domain.auth.model.request.LoginRequest;
-import com.accommodation.accommodation.global.handler.exception.errorcode.ErrorCode;
-import com.accommodation.accommodation.global.model.response.ErrorResponse;
-import com.accommodation.accommodation.global.util.JwtTokenUtil;
+import com.accommodation.accommodation.domain.auth.service.TokenService;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+
+import org.springframework.stereotype.Component;
 
 @Slf4j(topic = "로그인")
+@Component
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final JwtTokenUtil jwtUtil;
+    private final TokenService tokenService;
 
-    public LoginFilter(JwtTokenUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
+    public LoginFilter(AuthenticationManager authenticationManager, TokenService tokenService) {
+        super(authenticationManager);
+        this.tokenService = tokenService;
         setFilterProcessesUrl("/api/login");
     }
 
@@ -41,7 +43,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                                                 HttpServletResponse response) throws AuthenticationException {
         log.info("로그인 시도");
         try {
-            LoginRequest loginRequest = new ObjectMapper().readValue(request.getInputStream(), LoginRequest.class);
+            LoginRequest loginRequest = new ObjectMapper().readValue(request.getInputStream(),
+                    LoginRequest.class);
 
             return getAuthenticationManager().authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -51,11 +54,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                     )
             );
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error("올바르지 않은 로그인 시도");
             throw new AuthException(AuthErrorCode.LOGIN_FAILED);
         }
-
     }
+
 
     @Override
     protected void successfulAuthentication(
@@ -64,16 +67,21 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             FilterChain chain,
             Authentication authResult
     ) throws IOException {
-        log.info("로그인 성공");
-        String email = ((CustomUserDetails) authResult.getPrincipal()).getUsername();
+        String userId = ((CustomUserDetails) authResult.getPrincipal()).getUsername();
 
-        String token = jwtUtil.createToken(email);
-        jwtUtil.addJwtToCookie(token, response);
+        TokenInfo tokenInfo = tokenService.createTokens(userId);
+
+        Cookie accessTokenCookie = tokenService.createAccessTokenCookie(
+                tokenInfo.getAccessToken());
+        Cookie refreshTokenCookie = tokenService.createRefreshTokenCookie(
+                tokenInfo.getRefreshToken());
+
+        response.addCookie(accessTokenCookie);
+        response.addCookie(refreshTokenCookie);
 
         response.setStatus(HttpServletResponse.SC_OK);
-        PrintWriter writer = response.getWriter();
-        writer.flush();
     }
+
 
     @Override
     protected void unsuccessfulAuthentication(
@@ -83,9 +91,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     ) throws IOException {
 
         log.info("로그인 실패");
-        response.setStatus(401);
-        PrintWriter writer = response.getWriter();
-        writer.flush();
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
 
 }

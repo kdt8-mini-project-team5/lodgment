@@ -35,7 +35,11 @@ public class RedisConfig {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
         redisStandaloneConfiguration.setHostName(host);
         redisStandaloneConfiguration.setPort(port);
-        redisStandaloneConfiguration.setPassword(password);
+
+        if(!password.equals("false")) {
+            redisStandaloneConfiguration.setPassword(password);
+        }
+
         return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }
 
@@ -60,7 +64,7 @@ public class RedisConfig {
         // 캐시별로 개별 설정을 적용합니다.
         Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
         cacheConfigurations.put("accommodationDetails", cacheConfig.entryTtl(Duration.ofMinutes(1L)));
-        cacheConfigurations.put("accommodationList", cacheConfig.entryTtl(Duration.ofSeconds(60L))); // TTL을 5초로 설정
+        cacheConfigurations.put("accommodationList", cacheConfig.entryTtl(Duration.ofSeconds(10L))); // TTL을 5초로 설정
 
         return RedisCacheManager
             .RedisCacheManagerBuilder

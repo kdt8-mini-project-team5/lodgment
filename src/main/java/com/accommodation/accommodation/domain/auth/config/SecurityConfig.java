@@ -1,10 +1,14 @@
 package com.accommodation.accommodation.domain.auth.config;
 
+import com.accommodation.accommodation.domain.auth.config.filter.JwtAuthenticationFilter;
 import com.accommodation.accommodation.domain.auth.config.filter.LoginFilter;
-import com.accommodation.accommodation.domain.auth.config.filter.RequestFilter;
+import com.accommodation.accommodation.domain.auth.service.TokenService;
 import com.accommodation.accommodation.domain.auth.service.UserDetailsServiceImpl;
-import com.accommodation.accommodation.global.util.JwtTokenUtil;
+import com.accommodation.accommodation.global.util.CookieUtil;
+import com.accommodation.accommodation.global.util.JwtProvider;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,56 +26,62 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @Configuration
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-
-    private final JwtTokenUtil jwtUtil;
+    private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
+    private final TokenService tokenService;
+    private final JwtProvider jwtProvider;
+    private final CookieUtil cookieUtil;
     private final UserDetailsServiceImpl userDetailsService;
-    private final AuthenticationConfiguration authenticationConfiguration;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        AuthenticationManager authenticationManager) throws Exception {
 
         http
-                .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(configurer -> configurer.sessionCreationPolicy(
-                        SessionCreationPolicy.STATELESS))
-                .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable);
+            .csrf(AbstractHttpConfigurer::disable)
+            .sessionManagement(
+                session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .formLogin(AbstractHttpConfigurer::disable)
+            .httpBasic(AbstractHttpConfigurer::disable);
 
-        http.cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()));
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         http
-                .authorizeHttpRequests(matcher -> matcher
-                        .requestMatchers("/api/register/**", "/login").permitAll()
-                        .requestMatchers("/actuator/**").permitAll()
-                        .requestMatchers("/api/accommodation/**").permitAll()
-                        .requestMatchers("/api/accommodation").permitAll()
-                        .anyRequest().authenticated());
+            .authorizeHttpRequests(matcher -> matcher
+                .requestMatchers("/api/register/**", "/api/login").permitAll()
+                .requestMatchers("/api/accommodation/**").permitAll()
+                .requestMatchers("/api/accommodation").permitAll()
+                .requestMatchers("/actuator/**").permitAll()
+                .anyRequest().authenticated());
 
-        http.addFilterBefore(loginFilter(), UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(requestFilter(), LoginFilter.class);
+        http.addFilterBefore(loginFilter(authenticationManager),
+            UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
     @Bean
-    public RequestFilter requestFilter() {
-        return new RequestFilter(jwtUtil, userDetailsService);
+    public LoginFilter loginFilter(AuthenticationManager authenticationManager) throws Exception {
+        LoginFilter loginFilter = new LoginFilter(authenticationManager, tokenService);
+        loginFilter.setFilterProcessesUrl("/api/login");
+        return loginFilter;
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(tokenService, jwtProvider, cookieUtil,
+            userDetailsService);
     }
 
+
     @Bean
-    public LoginFilter loginFilter() throws Exception {
-        LoginFilter filter = new LoginFilter(jwtUtil);
-        filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
-        return filter;
+    public AuthenticationManager authenticationManager(
+        AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
@@ -79,7 +89,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://localhost:8080"));
+        config.setAllowedOrigins(List.of("https://fe-mini-project-ten.vercel.app"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("*"));
@@ -88,5 +98,4 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
-
 }
