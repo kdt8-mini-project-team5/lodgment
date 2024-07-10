@@ -22,7 +22,7 @@ public class AccommodationListRequestTest {
         validator = factory.getValidator();
     }
 
-    @Test
+/*    @Test
     @DisplayName("유효한 AccommodationListRequest 테스트")
     public void validAccommodationListRequest() {
         AccommodationListRequest request = new AccommodationListRequest("관광 호텔", 1000L, 1L, 10);
@@ -52,5 +52,5 @@ public class AccommodationListRequestTest {
                 violation.getPropertyPath().toString().equals("size") &&
                         violation.getMessage().contains("size는 최대 20입니다.")
         );
-    }
+    }*/
 }

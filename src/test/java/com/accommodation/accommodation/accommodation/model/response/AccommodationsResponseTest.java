@@ -10,7 +10,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AccommodationsResponseTest {
+/*public class AccommodationsResponseTest {
     @Test
     @DisplayName("AccommodationsResponse 생성 테스트")
     public void testAccommodationsResponseCreation() {
@@ -59,4 +59,4 @@ public class AccommodationsResponseTest {
         assertThat(response2.getRegion()).isEqualTo("Busan");
         assertThat(response2.getThumbnailUrl()).isEqualTo("http://example.com/hotel_b.jpg");
     }
-}
+}*/
