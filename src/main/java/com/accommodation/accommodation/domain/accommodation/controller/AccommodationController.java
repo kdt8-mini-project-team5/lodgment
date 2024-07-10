@@ -1,5 +1,7 @@
 package com.accommodation.accommodation.domain.accommodation.controller;
 
+import com.accommodation.accommodation.domain.accommodation.exception.AccommodationException;
+import com.accommodation.accommodation.domain.accommodation.exception.errorcode.AccommodationErrorCode;
 import com.accommodation.accommodation.domain.accommodation.model.request.AccommodationListRequest;
 import com.accommodation.accommodation.domain.accommodation.model.response.AccommodationsResponse;
 import com.accommodation.accommodation.domain.accommodation.model.type.Category;
@@ -42,6 +44,10 @@ public class AccommodationController {
             @PathVariable Long id,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkInDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkOutDate) {
+
+        if (checkInDate != null && checkOutDate != null && checkInDate.isAfter(checkOutDate)) {
+            throw new AccommodationException(AccommodationErrorCode.INVALID_DATE);
+        }
 
         AccommodationDetailResponse accommodationDetailResponse = accommodationService.getAccommodationById(id, checkInDate, checkOutDate);
         return ResponseEntity.ok(accommodationDetailResponse);

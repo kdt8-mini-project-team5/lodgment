@@ -11,7 +11,7 @@ public class PasswordValidator implements ConstraintValidator<PasswordValidation
 
     private Pattern pattern;
     private static final String PASSWORD_PATTERN =
-            "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$";
+            "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,30}$";
 
     @Override
     public void initialize(PasswordValidation constraintAnnotation) {

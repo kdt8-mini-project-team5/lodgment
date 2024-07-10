@@ -7,7 +7,8 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ConfirmBookingResponse {
+public class ConfirmBookingsResponse {
+
     private List<BookingResponse> bookingList;
 
     private long totalElements;
@@ -15,7 +16,11 @@ public class ConfirmBookingResponse {
     @Data
     @Builder
     public static class BookingResponse {
+
         private String orderId;
+
+        private String guestName;
+        private String guestTel;
 
         private String accommodationTitle;
 
