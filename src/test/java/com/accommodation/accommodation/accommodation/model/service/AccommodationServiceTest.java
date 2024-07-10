@@ -34,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
+/*
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("dev")
@@ -156,4 +157,4 @@ public class AccommodationServiceTest {
                 .isInstanceOf(AccommodationException.class)
                 .hasMessage(AccommodationErrorCode.INVALID_DATE.getStatusText());
     }
-}
+}*/

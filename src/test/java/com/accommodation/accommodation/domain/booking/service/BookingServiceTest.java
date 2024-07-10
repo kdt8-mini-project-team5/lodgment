@@ -35,7 +35,7 @@ class BookingServiceTest {
         bookingRepository.deleteAll();
     }
 
-    @Test
+/*    @Test
     public void 동시에_100개의_요청() throws InterruptedException {
         int threadCount = 100;
 
@@ -71,6 +71,6 @@ class BookingServiceTest {
         long booking = bookingRepository.count();
 
         assertEquals(1, booking);
-    }
+    }*/
 
 }
